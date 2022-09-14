@@ -20,4 +20,6 @@ public class Image extends BaseEntity{
     private Product product;
 
     private String imageUrl;
+
+    private int status;
 }
