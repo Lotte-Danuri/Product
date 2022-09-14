@@ -28,4 +28,6 @@ public class CategoryFirst extends BaseEntity{
     @JsonBackReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
+
+    private int status;
 }
