@@ -1,10 +1,10 @@
-package com.lotte.danuri.product.controller;
+package com.lotte.danuri.product.controller.seller;
 
-import com.lotte.danuri.product.model.Product;
+import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.request.ProductRequest;
 import com.lotte.danuri.product.model.response.ProductResponse;
-import com.lotte.danuri.product.service.ProductService;
+import com.lotte.danuri.product.service.seller.SellerProductService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -18,8 +18,8 @@ import java.util.List;
 @RequestMapping(value = "/sellers/products")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class ProductController {
-    private final ProductService productService;
+public class SellerProductController {
+    private final SellerProductService productService;
 
     @PostMapping("")
     public ResponseEntity<ProductResponse> createProduct (@RequestBody ProductRequest request){

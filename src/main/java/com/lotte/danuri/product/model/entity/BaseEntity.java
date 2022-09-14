@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;

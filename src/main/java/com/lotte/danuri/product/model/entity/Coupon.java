@@ -1,12 +1,10 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
-import com.fasterxml.jackson.databind.DatabindException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
