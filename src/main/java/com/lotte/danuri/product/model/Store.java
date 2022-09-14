@@ -26,4 +26,6 @@ public class Store extends BaseEntity{
     private String ownerNumber;
 
     private String imageUrl;
+
+    private int status;
 }
