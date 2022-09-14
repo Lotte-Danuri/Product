@@ -1,12 +1,11 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
-import com.fasterxml.jackson.databind.DatabindException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -19,11 +18,13 @@ public class Coupon extends BaseEntity{
 
     private String contents;
 
-    private Date startDate;
+    private LocalDateTime startDate;
 
-    private Date endDate;
+    private LocalDateTime endDate;
 
     private Double discountRate;
 
     private String appliedTo;
+
+    private int status;
 }
