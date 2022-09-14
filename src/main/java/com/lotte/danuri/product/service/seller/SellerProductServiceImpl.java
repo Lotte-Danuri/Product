@@ -1,7 +1,10 @@
-package com.lotte.danuri.product.service;
+package com.lotte.danuri.product.service.seller;
 
-import com.lotte.danuri.product.model.*;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.entity.CategoryFirst;
+import com.lotte.danuri.product.model.entity.CategorySecond;
+import com.lotte.danuri.product.model.entity.CategoryThird;
+import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class SellerProductServiceImpl implements SellerProductService {
 
     private final ProductRepository productRepository;
     private final CategoryFirstRepository categoryFirstRepository;

@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
