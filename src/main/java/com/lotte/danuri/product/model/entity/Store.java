@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +26,6 @@ public class Store extends BaseEntity{
     private String ownerNumber;
 
     private String imageUrl;
+
+    private int status;
 }

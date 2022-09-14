@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -13,13 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "category_third")
-public class CategoryThird extends BaseEntity{
-
-    @ManyToOne
-    @JoinColumn(name = "CategorySecond_id")
-    @JsonManagedReference
-    private CategorySecond categorySecond;
+@Table(name = "category_second")
+public class CategorySecond extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "CategoryFirst_id")
@@ -29,6 +24,12 @@ public class CategoryThird extends BaseEntity{
     private String categoryName;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "categoryThird",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CategoryThird> categoryThirds;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
+
+    private int status;
 }

@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model;
+package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -41,7 +41,11 @@ public class Product extends BaseEntity{
 
     private Long storeId;
 
+    private Long likeCount;
+
     @JsonBackReference
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Image> images;
+
+    private int status;
 }
