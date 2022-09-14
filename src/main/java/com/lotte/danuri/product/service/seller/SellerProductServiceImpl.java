@@ -1,5 +1,8 @@
 package com.lotte.danuri.product.service.seller;
 
+import com.lotte.danuri.product.error.ErrorCode;
+import com.lotte.danuri.product.exception.CategoryNotFoundException;
+import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.entity.CategoryFirst;
 import com.lotte.danuri.product.model.entity.CategorySecond;
@@ -11,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
@@ -29,7 +31,7 @@ public class SellerProductServiceImpl implements SellerProductService {
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
         if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent()){
-            throw new EntityNotFoundException("CategoryFirst Not Found!");
+            throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -61,7 +63,7 @@ public class SellerProductServiceImpl implements SellerProductService {
         Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
 
         if (!optionalProduct.isPresent()){
-            throw new EntityNotFoundException("Product not present in the database");
+            throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -79,12 +81,12 @@ public class SellerProductServiceImpl implements SellerProductService {
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
         if (!optionalProduct.isPresent() || optionalProduct.get().getStatus()==1){
-            throw new EntityNotFoundException("Product not present in the database");
+            throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
         if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent() ||
             categoryFirst.get().getStatus()==1 || categorySecond.get().getStatus()==1 || categoryThird.get().getStatus()==1){
-            throw new EntityNotFoundException("CategoryFirst Not Found!");
+            throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
         ModelMapper mapper = new ModelMapper();
