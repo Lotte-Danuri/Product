@@ -49,4 +49,8 @@ public class Product extends BaseEntity{
     private List<Image> images;
 
     private LocalDateTime deletedDate;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CouponProduct> couponProducts;
 }
