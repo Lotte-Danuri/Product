@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -29,5 +30,5 @@ public class CategoryFirst extends BaseEntity{
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 
-    private int status;
+    private LocalDateTime deletedDate;
 }
