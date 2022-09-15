@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -69,7 +70,7 @@ public class SellerProductServiceImpl implements SellerProductService {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        optionalProduct.get().setStatus(1);
+        optionalProduct.get().setDeletedDate(LocalDateTime.now());
 
         productRepository.save(optionalProduct.get());
     }
@@ -80,12 +81,12 @@ public class SellerProductServiceImpl implements SellerProductService {
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
-        if (!optionalProduct.isPresent() || optionalProduct.get().getStatus()==1){
+        if (!optionalProduct.isPresent() || optionalProduct.get().getDeletedDate() != null){
             throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
         if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent() ||
-            categoryFirst.get().getStatus()==1 || categorySecond.get().getStatus()==1 || categoryThird.get().getStatus()==1){
+            categoryFirst.get().getDeletedDate() != null || categorySecond.get().getDeletedDate() != null || categoryThird.get().getDeletedDate() != null){
             throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 

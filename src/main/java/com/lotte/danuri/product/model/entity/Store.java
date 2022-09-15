@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -27,5 +28,5 @@ public class Store extends BaseEntity{
 
     private String imageUrl;
 
-    private int status;
+    private LocalDateTime deletedDate;
 }

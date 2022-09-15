@@ -22,7 +22,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
 
     public ProductDto getProduct(Long productId){
         Optional<Product> optionalProduct = productRepository.findById(productId);
-        if (!optionalProduct.isPresent()){
+        if (!optionalProduct.isPresent() || optionalProduct.get().getDeletedDate() != null){
             throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 

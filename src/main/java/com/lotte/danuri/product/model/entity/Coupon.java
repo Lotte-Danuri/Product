@@ -26,5 +26,5 @@ public class Coupon extends BaseEntity{
 
     private String appliedTo;
 
-    private int status;
+    private LocalDateTime deletedDate;
 }
