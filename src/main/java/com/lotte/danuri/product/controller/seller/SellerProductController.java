@@ -24,15 +24,11 @@ public class SellerProductController {
     @PostMapping("")
     public ResponseEntity<ProductResponse> createProduct (@RequestBody ProductRequest request){
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        ProductDto productDto = mapper.map(request, ProductDto.class);
+        ProductDto productDto = new ModelMapper().map(request, ProductDto.class);
 
         ProductDto createProduct = sellerProductService.createProduct(productDto);
-        ProductResponse productResponse = mapper.map(createProduct, ProductResponse.class);
 
-        return ResponseEntity.ok(productResponse);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("")
@@ -51,10 +47,7 @@ public class SellerProductController {
     @DeleteMapping("")
     public ResponseEntity<ProductResponse> deleteProduct (@RequestBody ProductRequest request) {
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        ProductDto productDto = mapper.map(request, ProductDto.class);
+        ProductDto productDto = new ModelMapper().map(request, ProductDto.class);
 
         sellerProductService.deleteProduct(productDto);
 
@@ -64,14 +57,10 @@ public class SellerProductController {
     @PatchMapping("")
     public ResponseEntity<ProductResponse> updateProduct (@RequestBody ProductRequest request){
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        ProductDto productDto = mapper.map(request, ProductDto.class);
+        ProductDto productDto = new ModelMapper().map(request, ProductDto.class);
 
         ProductDto updateDto = sellerProductService.updateProduct(productDto);
-        ProductResponse productResponse = mapper.map(updateDto, ProductResponse.class);
 
-        return ResponseEntity.ok(productResponse);
+        return ResponseEntity.ok().build();
     }
 }
