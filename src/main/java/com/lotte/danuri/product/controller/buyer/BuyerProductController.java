@@ -36,13 +36,8 @@ public class BuyerProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable("productId") Long productId){
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
         ProductDto productDto = buyerProductService.getProduct(productId);
 
-        ProductResponse productResponse = mapper.map(productDto, ProductResponse.class);
-
-        return ResponseEntity.ok(productResponse);
+        return ResponseEntity.ok(new ModelMapper().map(productDto, ProductResponse.class));
     }
 }
