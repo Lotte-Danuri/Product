@@ -22,5 +22,4 @@ public class AuditorAwareConfig implements AuditorAware<Long> {
                         .orElse("-1"));
         return Optional.ofNullable(memberId);
     }
-
 }
