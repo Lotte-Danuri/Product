@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class Image extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "Product_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Product product;
 
     private String imageUrl;

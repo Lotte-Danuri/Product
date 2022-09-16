@@ -19,16 +19,17 @@ public class CategorySecond extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "CategoryFirst_id")
-    @JsonManagedReference
+    @JsonBackReference
     private CategoryFirst categoryFirst;
 
     private String categoryName;
 
-    @JsonBackReference
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryThird> categoryThirds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 

@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,15 +19,16 @@ public class CategoryFirst extends BaseEntity{
 
     private String categoryName;
 
-    @JsonBackReference
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategorySecond> categorySeconds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryThird> categoryThirds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 
