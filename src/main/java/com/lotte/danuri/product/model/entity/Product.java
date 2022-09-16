@@ -19,17 +19,17 @@ public class Product extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "CategoryFirst_id")
-    @JsonManagedReference
+    @JsonBackReference
     private CategoryFirst categoryFirst;
 
     @ManyToOne
     @JoinColumn(name = "CategorySecond_id")
-    @JsonManagedReference
+    @JsonBackReference
     private CategorySecond categorySecond;
 
     @ManyToOne
     @JoinColumn(name = "CategoryThird_id")
-    @JsonManagedReference
+    @JsonBackReference
     private CategoryThird categoryThird;
 
     private String productName;
@@ -44,11 +44,12 @@ public class Product extends BaseEntity{
 
     private Long likeCount;
 
-    @JsonBackReference
+    private LocalDateTime deletedDate;
+
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Image> images;
-
-    private LocalDateTime deletedDate;
 
     @JsonBackReference
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)

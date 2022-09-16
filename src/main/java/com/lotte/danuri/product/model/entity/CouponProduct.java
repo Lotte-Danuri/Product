@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +19,9 @@ import java.time.LocalDateTime;
 @Table(name = "coupon_product")
 public class CouponProduct extends BaseEntity{
 
-
     @ManyToOne
     @JoinColumn(name = "Coupon_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Coupon coupon;
 
     @ManyToOne
