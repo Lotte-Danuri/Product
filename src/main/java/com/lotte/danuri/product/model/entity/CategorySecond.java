@@ -21,7 +21,7 @@ public class CategorySecond extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "CategoryFirst_id")
-    @JsonManagedReference
+    @JsonBackReference
     private CategoryFirst categoryFirst;
 
     @JsonBackReference
