@@ -1,8 +1,11 @@
 package com.lotte.danuri.product.model.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class CouponProductDto {
 
     private Long id;

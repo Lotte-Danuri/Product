@@ -2,26 +2,24 @@ package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@Setter
 @Entity
+@Builder
 @Table(name = "image")
 public class Image extends BaseEntity{
+
+    private String imageUrl;
+    private LocalDateTime deletedDate;
 
     @ManyToOne
     @JoinColumn(name = "Product_id")
     @JsonBackReference
     private Product product;
-
-    private String imageUrl;
-
-    private LocalDateTime deletedDate;
 }

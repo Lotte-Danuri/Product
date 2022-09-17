@@ -1,12 +1,12 @@
 package com.lotte.danuri.product.controller.coupon;
 
 import com.lotte.danuri.product.model.dto.CouponDto;
+import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.entity.Coupon;
-import com.lotte.danuri.product.model.request.CouponRequest;
-import com.lotte.danuri.product.model.response.CouponResponse;
 import com.lotte.danuri.product.service.coupon.CouponService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,46 +21,31 @@ public class CouponController {
 
     private final CouponService couponService;
 
-    @PostMapping("")
-    public ResponseEntity<CouponResponse> createCoupon (@RequestBody CouponRequest request){
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity createCoupon (@RequestBody CouponDto couponDto){
 
-        CouponDto couponDto = new ModelMapper().map(request, CouponDto.class);
-
-        CouponDto createCoupon = couponService.createCoupon(couponDto);
-
+        couponService.createCoupon(couponDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<CouponResponse>> getCoupons(){
+    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> getCoupons(){
 
-        Iterable<Coupon> couponList = couponService.getAllCoupons();
-
-        List<CouponResponse> result = new ArrayList<>();
-        couponList.forEach(v -> {
-            result.add(new ModelMapper().map(v, CouponResponse.class));
-        });
-
-        return ResponseEntity.ok(result);
+        List<CouponDto> couponList = couponService.getCoupons();
+        return ResponseEntity.ok(couponList);
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<CouponResponse> deleteCoupon(@RequestBody CouponRequest request){
+    @DeleteMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity deleteCoupon(@RequestBody CouponDto couponDto){
 
-        CouponDto couponDto = new ModelMapper().map(request, CouponDto.class);
-
-        couponService.deleteCoupon(couponDto);
-
+        couponService.deleteCoupon(couponDto.getId());
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("")
-    public ResponseEntity<CouponResponse> updateCoupon(@RequestBody CouponRequest request){
-
-        CouponDto couponDto = new ModelMapper().map(request, CouponDto.class);
+    @PatchMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity updateCoupon(@RequestBody CouponDto couponDto){
 
         couponService.updateCoupon(couponDto);
-
         return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,8 @@
 package com.lotte.danuri.product.service.coupon;
 
+import com.lotte.danuri.product.error.ErrorCode;
+import com.lotte.danuri.product.exception.CouponNotFoundException;
+import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.CouponProductDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
@@ -24,104 +27,125 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
 
-    private final CouponRepository couponRepository;
-    private final CouponProductRepository couponProductRepository;
-
     private final ProductRepository productRepository;
 
-    public CouponDto createCoupon(CouponDto couponDto) {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    private final CouponRepository couponRepository;
+    private final CouponProductRepository couponProductRepository;
+    @Override
+    public void createCoupon(CouponDto couponDto) {
+        //스토어 ID 예외처리 추가해야 함.
 
-        Coupon coupon = mapper.map(couponDto, Coupon.class);
-        Coupon couponResult = couponRepository.save(coupon);
+        couponDto.getProductId().forEach(v -> {
+            if(productRepository.findById(v).isEmpty()){
+                throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
+            }
+        });
 
+        // 쿠폰 INSERT
+        Coupon coupon = couponRepository.save(
+                Coupon.builder()
+                        .name(couponDto.getName())
+                        .contents(couponDto.getContents())
+                        .startDate(couponDto.getStartDate())
+                        .endDate(couponDto.getEndDate())
+                        .discountRate(couponDto.getDiscountRate())
+                        .minOrderPrice(couponDto.getMinOrderPrice())
+                        .maxDiscountPrice(couponDto.getMaxDiscountPrice())
+                        .storeId(couponDto.getStoreId())
+                        .build()
+        );
+
+        // 쿠폰에 적용된 상품 INSERT
         List<CouponProduct> couponProductList = new ArrayList<CouponProduct>();
         couponDto.getProductId().forEach(v -> {
-            CouponProduct couponProduct = new CouponProduct();
-            couponProduct.setCoupon(couponResult);
-
-            Optional<Product> product = productRepository.findById(v);
-            couponProduct.setProduct(product.get());
-
+            CouponProduct couponProduct = CouponProduct.builder()
+                    .product(productRepository.findById(v).get())
+                    .coupon(coupon)
+                    .build();
             couponProductList.add(couponProduct);
         });
-
         couponProductRepository.saveAll(couponProductList);
-
-        CouponDto returnValue = mapper.map(coupon, CouponDto.class);
-
-        return returnValue;
     }
 
-    public Iterable<Coupon> getAllCoupons(){
-        return couponRepository.findAll();
+    @Override
+    public List<CouponDto> getCoupons() {
+         List<Coupon> coupons = couponRepository.findAll();
+         List<CouponDto> result = new ArrayList<>();
+
+         coupons.forEach(v -> {
+             List<Long> couponProductId = new ArrayList<>();
+             Optional<Iterable<CouponProduct>> couponProducts = couponProductRepository.findByCouponIdAndDeletedDateIsNull(v.getId());
+             couponProducts.get().forEach(w -> {
+                 couponProductId.add(w.getId());
+             });
+
+             CouponDto couponDto = new CouponDto(v);
+             couponDto.updateProductId(couponProductId);
+
+             result.add(couponDto);
+         });
+         return result;
     }
 
-    public void deleteCoupon(CouponDto couponDto){
-        Optional<Coupon> optionalCoupon = couponRepository.findById(couponDto.getId());
-        Optional<Iterable<CouponProduct>> optionalCouponProduct = couponProductRepository.findByCouponId(couponDto.getId());
+    @Override
+    public void deleteCoupon(Long id) {
+        Optional<Coupon> coupon = couponRepository.findById(id);
+        if(coupon.isEmpty()){
+            throw new CouponNotFoundException("Coupon not present in the database", ErrorCode.COUPON_NOT_FOUND);
+        }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        // 쿠폰 DELETE
+        coupon.get().updateDeleteDate(LocalDateTime.now());
+        couponRepository.save(coupon.get());
 
-        optionalCoupon.get().setDeletedDate(LocalDateTime.now());
-        couponRepository.save(optionalCoupon.get());
-
+        // 쿠폰에 적용된 상품 DELETE
+        Optional<Iterable<CouponProduct>> optionalCouponProduct = couponProductRepository.findByCouponId(id);
         List<CouponProduct> couponProductList = new ArrayList<>();
 
         optionalCouponProduct.get().forEach(v -> {
-            v.setDeletedDate(LocalDateTime.now());
+            v.updateDeleteDate(LocalDateTime.now());
             couponProductList.add(v);
         });
-
         couponProductRepository.saveAll(couponProductList);
     }
 
-    public void updateCoupon(CouponDto couponDto){
-        Optional<Coupon> optionalCoupon = couponRepository.findById(couponDto.getId());
+    @Override
+    public void updateCoupon(CouponDto couponDto) {
+        Optional<Coupon> coupon = couponRepository.findById(couponDto.getId());
+        if(coupon.isEmpty()){
+            throw new CouponNotFoundException("Coupon not present in the database", ErrorCode.COUPON_NOT_FOUND);
+        }
+
+        couponDto.getProductId().forEach(v -> {
+            if(productRepository.findById(v).isEmpty()){
+                throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
+            }
+        });
+
+        // 쿠폰 UPDATE
+        coupon.get().update(couponDto);
+        couponRepository.save(coupon.get());
+
+        // 쿠폰에 적용된 상품 UPDATE - 먼저 삭제
         Optional<Iterable<CouponProduct>> optionalCouponProduct = couponProductRepository.findByCouponId(couponDto.getId());
-
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        optionalCoupon.get().setName(couponDto.getName());
-        optionalCoupon.get().setContents(couponDto.getContents());
-        optionalCoupon.get().setStartDate(couponDto.getStartDate());
-        optionalCoupon.get().setEndDate(couponDto.getEndDate());
-        optionalCoupon.get().setDiscountRate(couponDto.getDiscountRate());
-        optionalCoupon.get().setMinOrderPrice(couponDto.getMinOrderPrice());
-        optionalCoupon.get().setMaxDiscountPrice(couponDto.getMaxDiscountPrice());
-
-        couponRepository.save(optionalCoupon.get());
-
-
-
-
         List<CouponProduct> couponProductList = new ArrayList<>();
 
         optionalCouponProduct.get().forEach(v -> {
-            v.setDeletedDate(LocalDateTime.now());
+            v.updateDeleteDate(LocalDateTime.now());
             couponProductList.add(v);
         });
-
         couponProductRepository.saveAll(couponProductList);
 
-
-
-
-
+        // 쿠폰에 적용된 상품 UPDATE - 이제 추가
         List<CouponProduct> listCouponProduct = new ArrayList<CouponProduct>();
         couponDto.getProductId().forEach(v -> {
-            CouponProduct couponProduct = new CouponProduct();
-            couponProduct.setCoupon(optionalCoupon.get());
-
-            Optional<Product> product = productRepository.findById(v);
-            couponProduct.setProduct(product.get());
-
-            couponProductList.add(couponProduct);
+            CouponProduct couponProduct = CouponProduct.builder()
+                    .product(productRepository.findById(v).get())
+                    .coupon(coupon.get())
+                    .build();
+            listCouponProduct.add(couponProduct);
         });
+        couponProductRepository.saveAll(listCouponProduct);
 
-        couponProductRepository.saveAll(couponProductList);
     }
 }

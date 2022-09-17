@@ -2,9 +2,7 @@ package com.lotte.danuri.product.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -13,11 +11,14 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@Setter
 @Entity
+@Builder
 @Table(name = "coupon_product")
 public class CouponProduct extends BaseEntity{
+
+    private LocalDateTime deletedDate;
 
     @ManyToOne
     @JoinColumn(name = "Coupon_id")
@@ -29,5 +30,7 @@ public class CouponProduct extends BaseEntity{
     @JsonManagedReference
     private Product product;
 
-    private LocalDateTime deletedDate;
+    public void updateDeleteDate(LocalDateTime now) {
+        deletedDate = now;
+    }
 }
