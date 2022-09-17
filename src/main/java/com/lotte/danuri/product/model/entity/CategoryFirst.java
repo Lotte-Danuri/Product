@@ -19,15 +19,15 @@ public class CategoryFirst extends BaseEntity{
     private String categoryName;
     private LocalDateTime deletedDate;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategorySecond> categorySeconds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryThird> categoryThirds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 

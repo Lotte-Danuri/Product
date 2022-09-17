@@ -27,7 +27,7 @@ public class CouponProduct extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "Product_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Product product;
 
     public void updateDeleteDate(LocalDateTime now) {
