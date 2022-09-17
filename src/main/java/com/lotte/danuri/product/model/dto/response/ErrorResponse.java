@@ -1,4 +1,4 @@
-package com.lotte.danuri.product.model.response;
+package com.lotte.danuri.product.model.dto.response;
 
 import com.lotte.danuri.product.error.ErrorCode;
 import lombok.Getter;

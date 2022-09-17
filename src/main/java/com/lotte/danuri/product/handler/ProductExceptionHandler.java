@@ -2,14 +2,13 @@ package com.lotte.danuri.product.handler;
 
 import com.lotte.danuri.product.exception.CategoryNotFoundException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
-import com.lotte.danuri.product.model.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import com.lotte.danuri.product.model.dto.response.ErrorResponse;
 @Slf4j
 @RestControllerAdvice
 public class ProductExceptionHandler {

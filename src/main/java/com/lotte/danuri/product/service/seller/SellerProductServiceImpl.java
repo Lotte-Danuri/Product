@@ -13,9 +13,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -26,90 +32,68 @@ public class SellerProductServiceImpl implements SellerProductService {
     private final CategorySecondRepository categorySecondRepository;
     private final CategoryThirdRepository categoryThirdRepository;
 
-    public ProductDto createProduct(ProductDto productDto){
+    public void createProduct(ProductDto productDto) {
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
-        if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent()){
+        if (categoryFirst.isEmpty() || categorySecond.isEmpty() || categoryThird.isEmpty()){
             throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        productDto.setLikeCount(0L);
+        Product product = productRepository.save(
+                Product.builder()
+                        .categoryFirst(categoryFirst.get())
+                        .categorySecond(categorySecond.get())
+                        .categoryThird(categoryThird.get())
+                        .productName(productDto.getProductName())
+                        .thumbnailUrl(productDto.getThumbnailUrl())
+                        .price(productDto.getPrice())
+                        .stock(productDto.getStock())
+                        .storeId(productDto.getStoreId())
+                        .likeCount(0L)
+                        .build()
+        );
+    }
 
-        Product product = mapper.map(productDto, Product.class);
-        product.setCategoryFirst(categoryFirst.get());
-        product.setCategorySecond(categorySecond.get());
-        product.setCategoryThird(categoryThird.get());
+    public List<ProductDto> getProducts(){
+        List<Product> products = productRepository.findAll();
+        List<ProductDto> result = new ArrayList<>();
 
+        products.forEach(v -> {
+            ProductDto productDto = new ProductDto(v);
+            result.add(productDto);
+        });
+        return result;
+    }
+
+    public void deleteProduct(Long id) {
+        if(productRepository.findById(id).isEmpty()){
+            throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        Product product = productRepository.findById(id).get();
+        product.updateDeletedDate(LocalDateTime.now());
         productRepository.save(product);
-
-        ProductDto returnValue = mapper.map(product, ProductDto.class);
-
-        returnValue.setCategoryFirstId(categoryFirst.get().getId());
-        returnValue.setCategorySecondId(categorySecond.get().getId());
-        returnValue.setCategoryThirdId(categoryThird.get().getId());
-
-        return returnValue;
     }
 
-    public Iterable<Product> getAllProducts(){
-        return productRepository.findAll();
-    }
-
-    public void deleteProduct(ProductDto productDto){
-        Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
-
-        if (!optionalProduct.isPresent()){
-            throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
-        }
-
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-        optionalProduct.get().setDeletedDate(LocalDateTime.now());
-
-        productRepository.save(optionalProduct.get());
-    }
-
-    public ProductDto updateProduct(ProductDto productDto){
-        Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+    public void updateProduct(ProductDto productDto) {
+        Optional<Product> product = productRepository.findById(productDto.getId());
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
-        if (!optionalProduct.isPresent() || optionalProduct.get().getDeletedDate() != null){
+        if(product.isEmpty()){
             throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent() ||
-            categoryFirst.get().getDeletedDate() != null || categorySecond.get().getDeletedDate() != null || categoryThird.get().getDeletedDate() != null){
+        if (categoryFirst.isEmpty() || categorySecond.isEmpty() || categoryThird.isEmpty()){
             throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get());
 
-        optionalProduct.get().setPrice(productDto.getPrice());
-        optionalProduct.get().setProductName(productDto.getProductName());
-        optionalProduct.get().setStock(productDto.getStock());
-        optionalProduct.get().setStoreId(productDto.getStoreId());
-        optionalProduct.get().setThumbnailUrl(productDto.getThumbnailUrl());
-        optionalProduct.get().setCategoryFirst(categoryFirst.get());
-        optionalProduct.get().setCategorySecond(categorySecond.get());
-        optionalProduct.get().setCategoryThird(categoryThird.get());
-
-        productRepository.save(optionalProduct.get());
-
-        ProductDto returnValue = mapper.map(optionalProduct.get(), ProductDto.class);
-
-        returnValue.setCategoryFirstId(categoryFirst.get().getId());
-        returnValue.setCategorySecondId(categorySecond.get().getId());
-        returnValue.setCategoryThirdId(categoryThird.get().getId());
-
-        return productDto;
+        productRepository.save(product.get());
     }
 }

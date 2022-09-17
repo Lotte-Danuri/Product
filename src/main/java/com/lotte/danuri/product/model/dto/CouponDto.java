@@ -1,12 +1,16 @@
 package com.lotte.danuri.product.model.dto;
 
-import lombok.Data;
+import com.lotte.danuri.product.model.entity.Coupon;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class CouponDto {
 
     private Long id;
@@ -24,4 +28,20 @@ public class CouponDto {
     private Double maxDiscountPrice;
 
     private List<Long> productId;
+
+    public CouponDto(Coupon coupon){
+        this.id = coupon.getId();
+        this.storeId = coupon.getStoreId();
+        this.name = coupon.getName();
+        this.contents = coupon.getContents();
+        this.startDate = coupon.getStartDate();
+        this.endDate = coupon.getEndDate();
+        this.discountRate = coupon.getDiscountRate();
+        this.minOrderPrice = coupon.getMinOrderPrice();
+        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
+    }
+
+    public void updateProductId(List<Long> couponProductId) {
+        productId = couponProductId;
+    }
 }

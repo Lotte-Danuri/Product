@@ -8,5 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CouponProductRepository extends JpaRepository<CouponProduct, Long> {
-    Optional<Iterable<CouponProduct>> findByCouponId(Long couponId);
+    Optional<Iterable<CouponProduct>> findByCouponId(long id);
+
+    Optional<Iterable<CouponProduct>> findByCouponIdAndDeletedDateIsNull(long id);
 }
