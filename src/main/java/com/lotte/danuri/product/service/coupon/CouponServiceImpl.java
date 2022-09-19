@@ -115,14 +115,10 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.save(coupon.get());
 
         // 쿠폰에 적용된 상품 DELETE
-        Optional<Iterable<CouponProduct>> optionalCouponProduct = couponProductRepository.findByCouponId(id);
-        List<CouponProduct> couponProductList = new ArrayList<>();
-
-        optionalCouponProduct.get().forEach(v -> {
+        coupon.get().getCouponProducts().forEach(v -> {
             v.updateDeleteDate(LocalDateTime.now());
-            couponProductList.add(v);
         });
-        couponProductRepository.saveAll(couponProductList);
+        couponProductRepository.saveAll(coupon.get().getCouponProducts());
     }
 
     @Override
