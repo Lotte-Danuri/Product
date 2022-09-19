@@ -2,7 +2,9 @@ package com.lotte.danuri.product.service.coupon;
 
 import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.CouponNotFoundException;
+import com.lotte.danuri.product.exception.CouponWasDeletedException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
+import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.CouponProductDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
@@ -28,16 +30,22 @@ import java.util.Optional;
 public class CouponServiceImpl implements CouponService {
 
     private final ProductRepository productRepository;
-
     private final CouponRepository couponRepository;
     private final CouponProductRepository couponProductRepository;
     @Override
     public void createCoupon(CouponDto couponDto) {
         //스토어 ID 예외처리 추가해야 함.
 
+        // 예외처리
+        // 1. 상품이 DB에 없는 경우
+        // 2. 상품이 삭제된 경우
         couponDto.getProductId().forEach(v -> {
-            if(productRepository.findById(v).isEmpty()){
+            Optional<Product> product = productRepository.findById(v);
+            if(product.isEmpty()){
                 throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
+            }
+            if(product.get().getDeletedDate() != null){
+                throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
             }
         });
 
@@ -90,8 +98,16 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public void deleteCoupon(Long id) {
         Optional<Coupon> coupon = couponRepository.findById(id);
+
+        // 예외처리
+        // 1. 쿠폰이 DB에 없는 경우
         if(coupon.isEmpty()){
             throw new CouponNotFoundException("Coupon not present in the database", ErrorCode.COUPON_NOT_FOUND);
+        }
+
+        // 2. 쿠폰이 삭제된 경우
+        if(coupon.get().getDeletedDate() != null){
+            throw new CouponWasDeletedException("Coupon was deleted in the database", ErrorCode.COUPON_WAS_DELETED);
         }
 
         // 쿠폰 DELETE
@@ -112,13 +128,27 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public void updateCoupon(CouponDto couponDto) {
         Optional<Coupon> coupon = couponRepository.findById(couponDto.getId());
+
+        // 예외처리
+        // 1. 쿠폰이 DB에 없는 경우
         if(coupon.isEmpty()){
             throw new CouponNotFoundException("Coupon not present in the database", ErrorCode.COUPON_NOT_FOUND);
         }
 
+        // 2. 쿠폰이 삭제된 경우
+        if(coupon.get().getDeletedDate() != null){
+            throw new CouponWasDeletedException("Coupon was deleted in the database", ErrorCode.COUPON_WAS_DELETED);
+        }
+
+        // 3. 상품이 DB에 없는 경우
+        // 4. 상품이 삭제된 경우
         couponDto.getProductId().forEach(v -> {
-            if(productRepository.findById(v).isEmpty()){
+            Optional<Product> product = productRepository.findById(v);
+            if(product.isEmpty()){
                 throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
+            }
+            if(product.get().getDeletedDate() != null){
+                throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
             }
         });
 
@@ -146,6 +176,5 @@ public class CouponServiceImpl implements CouponService {
             listCouponProduct.add(couponProduct);
         });
         couponProductRepository.saveAll(listCouponProduct);
-
     }
 }
