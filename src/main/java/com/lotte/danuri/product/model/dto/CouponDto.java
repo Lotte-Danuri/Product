@@ -29,7 +29,7 @@ public class CouponDto {
 
     private List<Long> productId;
 
-    public CouponDto(Coupon coupon){
+    public CouponDto(Coupon coupon, List<Long> productId) {
         this.id = coupon.getId();
         this.storeId = coupon.getStoreId();
         this.name = coupon.getName();
@@ -39,6 +39,7 @@ public class CouponDto {
         this.discountRate = coupon.getDiscountRate();
         this.minOrderPrice = coupon.getMinOrderPrice();
         this.maxDiscountPrice = coupon.getMaxDiscountPrice();
+        this.productId = productId;
     }
 
     public void updateProductId(List<Long> couponProductId) {
