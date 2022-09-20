@@ -76,23 +76,19 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public List<CouponDto> getCoupons() {
-         List<Coupon> coupons = couponRepository.findAll();
-         List<CouponDto> result = new ArrayList<>();
+    public List<CouponDto> getCoupons(){
+        List<Coupon> coupons = couponRepository.findAll();
+        List<CouponDto> result = new ArrayList<>();
 
-         coupons.forEach(v -> {
-             List<Long> couponProductId = new ArrayList<>();
-             Optional<Iterable<CouponProduct>> couponProducts = couponProductRepository.findByCouponIdAndDeletedDateIsNull(v.getId());
-             couponProducts.get().forEach(w -> {
-                 couponProductId.add(w.getId());
-             });
-
-             CouponDto couponDto = new CouponDto(v);
-             couponDto.updateProductId(couponProductId);
-
-             result.add(couponDto);
-         });
-         return result;
+        coupons.forEach(v -> {
+            List<Long> productId = new ArrayList<>();
+            v.getCouponProducts().forEach(w -> {
+                productId.add(w.getId());
+            });
+            CouponDto couponDto = new CouponDto(v,productId);
+            result.add(couponDto);
+        });
+        return result;
     }
 
     @Override
@@ -153,10 +149,9 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.save(coupon.get());
 
         // 쿠폰에 적용된 상품 UPDATE - 먼저 삭제
-        Optional<Iterable<CouponProduct>> optionalCouponProduct = couponProductRepository.findByCouponId(couponDto.getId());
         List<CouponProduct> couponProductList = new ArrayList<>();
 
-        optionalCouponProduct.get().forEach(v -> {
+        coupon.get().getCouponProducts().forEach(v -> {
             v.updateDeleteDate(LocalDateTime.now());
             couponProductList.add(v);
         });
