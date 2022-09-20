@@ -1,8 +1,10 @@
 package com.lotte.danuri.product.service.seller;
 
 import com.lotte.danuri.product.error.ErrorCode;
+import com.lotte.danuri.product.exception.CategoryWasDeletedException;
 import com.lotte.danuri.product.exception.CategoryNotFoundException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
+import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.entity.CategoryFirst;
 import com.lotte.danuri.product.model.entity.CategorySecond;
@@ -10,11 +12,11 @@ import com.lotte.danuri.product.model.entity.CategoryThird;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,90 +28,99 @@ public class SellerProductServiceImpl implements SellerProductService {
     private final CategorySecondRepository categorySecondRepository;
     private final CategoryThirdRepository categoryThirdRepository;
 
-    public ProductDto createProduct(ProductDto productDto){
+    public void createProduct(ProductDto productDto) {
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
-        if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent()){
+        // 예외 처리
+        // 1. 카테고리가 DB에 존재하지 않을 경우
+        if (categoryFirst.isEmpty() || categorySecond.isEmpty() || categoryThird.isEmpty()){
             throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        // 2. 카테고리가 삭제된 경우
+        if (categoryFirst.get().getDeletedDate() != null ||
+            categorySecond.get().getDeletedDate() != null ||
+            categoryThird.get().getDeletedDate() != null){
+            throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+        }
 
-        productDto.setLikeCount(0L);
-
-        Product product = mapper.map(productDto, Product.class);
-        product.setCategoryFirst(categoryFirst.get());
-        product.setCategorySecond(categorySecond.get());
-        product.setCategoryThird(categoryThird.get());
-
-        productRepository.save(product);
-
-        ProductDto returnValue = mapper.map(product, ProductDto.class);
-
-        returnValue.setCategoryFirstId(categoryFirst.get().getId());
-        returnValue.setCategorySecondId(categorySecond.get().getId());
-        returnValue.setCategoryThirdId(categoryThird.get().getId());
-
-        return returnValue;
+        Product product = productRepository.save(
+                Product.builder()
+                        .categoryFirst(categoryFirst.get())
+                        .categorySecond(categorySecond.get())
+                        .categoryThird(categoryThird.get())
+                        .productName(productDto.getProductName())
+                        .thumbnailUrl(productDto.getThumbnailUrl())
+                        .price(productDto.getPrice())
+                        .stock(productDto.getStock())
+                        .storeId(productDto.getStoreId())
+                        .likeCount(0L)
+                        .build()
+        );
     }
 
-    public Iterable<Product> getAllProducts(){
-        return productRepository.findAll();
+    public List<ProductDto> getProducts(){
+        List<Product> products = productRepository.findAllByDeletedDateIsNull();
+        List<ProductDto> result = new ArrayList<>();
+
+        products.forEach(v -> {
+            ProductDto productDto = new ProductDto(v);
+            result.add(productDto);
+        });
+        return result;
     }
 
-    public void deleteProduct(ProductDto productDto){
-        Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+    public void deleteProduct(Long id) {
+        Optional<Product> product = productRepository.findById(id);
 
-        if (!optionalProduct.isPresent()){
+        // 예외 처리
+        // 1. 상품이 DB에 존재하지 않을 경우
+        if(product.isEmpty()){
             throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        // 2. 상품이 삭제된 경우
+        if(product.get().getDeletedDate() != null){
+            throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
+        }
 
-        optionalProduct.get().setDeletedDate(LocalDateTime.now());
-
-        productRepository.save(optionalProduct.get());
+        product.get().updateDeletedDate(LocalDateTime.now());
+        productRepository.save(product.get());
     }
 
-    public ProductDto updateProduct(ProductDto productDto){
-        Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+    public void updateProduct(ProductDto productDto) {
+        Optional<Product> product = productRepository.findById(productDto.getId());
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
 
-        if (!optionalProduct.isPresent() || optionalProduct.get().getDeletedDate() != null){
+        // 예외 처리
+        // 1. 상품이 DB에 존재하지 않을 경우
+        if(product.isEmpty()){
             throw new ProductNotFoundException("Product not present in the database", ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        if (!categoryFirst.isPresent() || !categorySecond.isPresent() || !categoryThird.isPresent() ||
-            categoryFirst.get().getDeletedDate() != null || categorySecond.get().getDeletedDate() != null || categoryThird.get().getDeletedDate() != null){
+        // 2. 카테고리가 DB에 존재하지 않을 경우
+        if (categoryFirst.isEmpty() || categorySecond.isEmpty() || categoryThird.isEmpty()){
             throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
         }
 
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        // 3. 상품이 삭제된 경우
+        if(product.get().getDeletedDate() != null){
+            throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
+        }
 
-        optionalProduct.get().setPrice(productDto.getPrice());
-        optionalProduct.get().setProductName(productDto.getProductName());
-        optionalProduct.get().setStock(productDto.getStock());
-        optionalProduct.get().setStoreId(productDto.getStoreId());
-        optionalProduct.get().setThumbnailUrl(productDto.getThumbnailUrl());
-        optionalProduct.get().setCategoryFirst(categoryFirst.get());
-        optionalProduct.get().setCategorySecond(categorySecond.get());
-        optionalProduct.get().setCategoryThird(categoryThird.get());
+        // 4. 카테고리가 삭제된 경우
+        if (categoryFirst.get().getDeletedDate() != null ||
+                categorySecond.get().getDeletedDate() != null ||
+                categoryThird.get().getDeletedDate() != null){
+            throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+        }
 
-        productRepository.save(optionalProduct.get());
+        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get());
 
-        ProductDto returnValue = mapper.map(optionalProduct.get(), ProductDto.class);
-
-        returnValue.setCategoryFirstId(categoryFirst.get().getId());
-        returnValue.setCategorySecondId(categorySecond.get().getId());
-        returnValue.setCategoryThirdId(categoryThird.get().getId());
-
-        return productDto;
+        productRepository.save(product.get());
     }
 }
