@@ -24,6 +24,8 @@ public class Product extends BaseEntity{
     private Long stock;
     private Long storeId;
     private Long likeCount;
+    private String productCode;
+    private Long warranty;
     private LocalDateTime deletedDate;
 
     @ManyToOne
@@ -55,6 +57,8 @@ public class Product extends BaseEntity{
         this.price = productDto.getPrice();
         this.stock = productDto.getStock();
         this.storeId = productDto.getStoreId();
+        this.productCode = productDto.getProductCode();
+        this.warranty = productDto.getWarranty();
         this.categoryFirst = categoryFirst;
         this.categorySecond = categorySecond;
         this.categoryThird = categoryThird;
