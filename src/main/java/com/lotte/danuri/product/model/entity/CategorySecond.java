@@ -24,11 +24,11 @@ public class CategorySecond extends BaseEntity{
     @JsonBackReference
     private CategoryFirst categoryFirst;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryThird> categoryThirds;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 }

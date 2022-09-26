@@ -57,6 +57,8 @@ public class SellerProductServiceImpl implements SellerProductService {
                         .stock(productDto.getStock())
                         .storeId(productDto.getStoreId())
                         .likeCount(0L)
+                        .productCode(productDto.getProductCode())
+                        .warranty(productDto.getWarranty())
                         .build()
         );
     }

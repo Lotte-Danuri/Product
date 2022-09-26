@@ -25,6 +25,8 @@ public class ProductDto {
     private Long stock;
     private Long storeId;
     private Long likeCount;
+    private String productCode;
+    private Long warranty;
 
     private Long categoryFirstId;
     private Long categorySecondId;
