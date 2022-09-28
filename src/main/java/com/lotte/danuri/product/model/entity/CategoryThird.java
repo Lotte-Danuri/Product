@@ -19,10 +19,6 @@ public class CategoryThird extends BaseEntity{
     private String categoryName;
     private LocalDateTime deletedDate;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "categoryThird",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Product> products;
-
     @ManyToOne
     @JoinColumn(name = "CategorySecond_id")
     @JsonBackReference

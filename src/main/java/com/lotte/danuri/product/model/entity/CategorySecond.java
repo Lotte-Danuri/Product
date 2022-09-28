@@ -27,8 +27,4 @@ public class CategorySecond extends BaseEntity{
     @JsonManagedReference
     @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryThird> categoryThirds;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "categorySecond",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Product> products;
 }
