@@ -23,14 +23,6 @@ public class CategoryFirst extends BaseEntity{
     @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategorySecond> categorySeconds;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CategoryThird> categoryThirds;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "categoryFirst",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Product> products;
-
     @Builder
     public CategoryFirst(String categoryName, LocalDateTime deletedDate) {
         this.categoryName = categoryName;
