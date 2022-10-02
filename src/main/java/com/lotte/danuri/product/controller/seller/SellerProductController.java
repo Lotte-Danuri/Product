@@ -24,9 +24,9 @@ public class SellerProductController {
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 등록", notes = "상품을 등록한다.")
-    public ResponseEntity createProduct (@RequestPart ProductDto productDto, @RequestPart MultipartFile image){
+    public ResponseEntity createProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
-        sellerProductService.createProduct(productDto, image);
+        sellerProductService.createProduct(productDto, imageList);
         return ResponseEntity.ok().build();
     }
 
@@ -50,9 +50,9 @@ public class SellerProductController {
 
     @PatchMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 수정", notes = "하나의 상품을 수정한다.")
-    public ResponseEntity updateProduct (@RequestPart ProductDto productDto, @RequestPart MultipartFile image){
+    public ResponseEntity updateProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
-        sellerProductService.updateProduct(productDto, image);
+        sellerProductService.updateProduct(productDto, imageList);
         return ResponseEntity.ok().build();
     }
 }
