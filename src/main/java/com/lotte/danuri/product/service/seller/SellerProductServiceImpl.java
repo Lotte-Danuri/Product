@@ -11,9 +11,12 @@ import com.lotte.danuri.product.model.entity.CategorySecond;
 import com.lotte.danuri.product.model.entity.CategoryThird;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.*;
+import com.lotte.danuri.product.util.S3Upload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +30,9 @@ public class SellerProductServiceImpl implements SellerProductService {
     private final CategoryFirstRepository categoryFirstRepository;
     private final CategorySecondRepository categorySecondRepository;
     private final CategoryThirdRepository categoryThirdRepository;
+    private final S3Upload s3Upload;
 
-    public void createProduct(ProductDto productDto) {
+    public void createProduct(ProductDto productDto, MultipartFile multipartFile) {
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
@@ -52,7 +56,7 @@ public class SellerProductServiceImpl implements SellerProductService {
                         .categorySecond(categorySecond.get())
                         .categoryThird(categoryThird.get())
                         .productName(productDto.getProductName())
-                        .thumbnailUrl(productDto.getThumbnailUrl())
+                        .thumbnailUrl(uploadImage(multipartFile))
                         .price(productDto.getPrice())
                         .stock(productDto.getStock())
                         .storeId(productDto.getStoreId())
@@ -92,7 +96,7 @@ public class SellerProductServiceImpl implements SellerProductService {
         productRepository.save(product.get());
     }
 
-    public void updateProduct(ProductDto productDto) {
+    public void updateProduct(ProductDto productDto, MultipartFile multipartFile) {
         Optional<Product> product = productRepository.findById(productDto.getId());
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
@@ -121,8 +125,17 @@ public class SellerProductServiceImpl implements SellerProductService {
             throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
         }
 
-        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get());
+        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get(), uploadImage(multipartFile));
 
         productRepository.save(product.get());
+    }
+
+    public String uploadImage(MultipartFile multipartFile){
+        try {
+            return s3Upload.upload(multipartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -51,7 +52,7 @@ public class Product extends BaseEntity{
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CouponProduct> couponProducts;
 
-    public void update(ProductDto productDto, CategoryFirst categoryFirst, CategorySecond categorySecond, CategoryThird categoryThird){
+    public void update(ProductDto productDto, CategoryFirst categoryFirst, CategorySecond categorySecond, CategoryThird categoryThird, String multipartFile){
         this.productName = productDto.getProductName();
         this.thumbnailUrl = productDto.getThumbnailUrl();
         this.price = productDto.getPrice();
@@ -62,6 +63,7 @@ public class Product extends BaseEntity{
         this.categoryFirst = categoryFirst;
         this.categorySecond = categorySecond;
         this.categoryThird = categoryThird;
+        this.thumbnailUrl = multipartFile;
     }
 
     public void updateDeletedDate(LocalDateTime now) {
