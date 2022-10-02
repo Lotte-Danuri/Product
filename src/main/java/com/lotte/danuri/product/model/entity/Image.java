@@ -22,4 +22,8 @@ public class Image extends BaseEntity{
     @JoinColumn(name = "Product_id")
     @JsonBackReference
     private Product product;
+
+    public void updateDeletedDate(LocalDateTime now) {
+        this.deletedDate = now;
+    }
 }

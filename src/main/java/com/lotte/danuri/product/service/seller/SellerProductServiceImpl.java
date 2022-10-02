@@ -6,10 +6,7 @@ import com.lotte.danuri.product.exception.CategoryNotFoundException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
-import com.lotte.danuri.product.model.entity.CategoryFirst;
-import com.lotte.danuri.product.model.entity.CategorySecond;
-import com.lotte.danuri.product.model.entity.CategoryThird;
-import com.lotte.danuri.product.model.entity.Product;
+import com.lotte.danuri.product.model.entity.*;
 import com.lotte.danuri.product.repository.*;
 import com.lotte.danuri.product.util.S3Upload;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +27,10 @@ public class SellerProductServiceImpl implements SellerProductService {
     private final CategoryFirstRepository categoryFirstRepository;
     private final CategorySecondRepository categorySecondRepository;
     private final CategoryThirdRepository categoryThirdRepository;
+    private final ImageRepository imageRepository;
     private final S3Upload s3Upload;
 
-    public void createProduct(ProductDto productDto, MultipartFile multipartFile) {
+    public void createProduct(ProductDto productDto, List<MultipartFile> multipartFileList) {
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
         Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(productDto.getCategoryThirdId());
@@ -56,7 +54,7 @@ public class SellerProductServiceImpl implements SellerProductService {
                         .categorySecond(categorySecond.get())
                         .categoryThird(categoryThird.get())
                         .productName(productDto.getProductName())
-                        .thumbnailUrl(uploadImage(multipartFile))
+                        .thumbnailUrl(uploadImage(multipartFileList.get(0)))
                         .price(productDto.getPrice())
                         .stock(productDto.getStock())
                         .storeId(productDto.getStoreId())
@@ -65,6 +63,17 @@ public class SellerProductServiceImpl implements SellerProductService {
                         .warranty(productDto.getWarranty())
                         .build()
         );
+
+        // 상품 상세 이미지 INSERT
+        List<Image> imageList = new ArrayList<>();
+        multipartFileList.stream().skip(1).forEach(v -> {
+            Image image = Image.builder()
+                    .imageUrl(uploadImage(v))
+                    .product(product)
+                    .build();
+            imageList.add(image);
+        });
+        imageRepository.saveAll(imageList);
     }
 
     public List<ProductDto> getProducts(){
@@ -92,11 +101,18 @@ public class SellerProductServiceImpl implements SellerProductService {
             throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
         }
 
+        // 상품 DELETE
         product.get().updateDeletedDate(LocalDateTime.now());
         productRepository.save(product.get());
+
+        // 상품 상세 이미지 DELETE
+        product.get().getImages().forEach(v -> {
+            v.updateDeletedDate(LocalDateTime.now());
+        });
+        imageRepository.saveAll(product.get().getImages());
     }
 
-    public void updateProduct(ProductDto productDto, MultipartFile multipartFile) {
+    public void updateProduct(ProductDto productDto, List<MultipartFile> multipartFileList) {
         Optional<Product> product = productRepository.findById(productDto.getId());
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
         Optional<CategorySecond> categorySecond = categorySecondRepository.findById(productDto.getCategorySecondId());
@@ -125,9 +141,28 @@ public class SellerProductServiceImpl implements SellerProductService {
             throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
         }
 
-        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get(), uploadImage(multipartFile));
-
+        // 상품 UPDATE
+        product.get().update(productDto, categoryFirst.get(), categorySecond.get(), categoryThird.get(), uploadImage(multipartFileList.get(0)));
         productRepository.save(product.get());
+
+        // 상품 상세 이미지(기존) DELETE
+        List<Image> imageList = new ArrayList<>();
+        product.get().getImages().forEach(v -> {
+            v.updateDeletedDate(LocalDateTime.now());
+            imageList.add(v);
+        });
+        imageRepository.saveAll(imageList);
+
+        // 상품 상세 이미지(신규) INSERT
+        List<Image> ListImage = new ArrayList<>();
+        multipartFileList.stream().skip(1).forEach(v -> {
+            Image image = Image.builder()
+                    .imageUrl(uploadImage(v))
+                    .product(product.get())
+                    .build();
+            ListImage.add(image);
+        });
+        imageRepository.saveAll(ListImage);
     }
 
     public String uploadImage(MultipartFile multipartFile){
