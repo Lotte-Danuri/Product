@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.controller.buyer;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.service.buyer.BuyerProductService;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +34,7 @@ public class BuyerProductController {
     @ApiOperation(value = "상품 상세 조회", notes = "하나의 상품을 상세 조회한다.")
     public ResponseEntity<?> getProduct(@PathVariable("productId") Long productId){
 
-        ProductDto productDto = buyerProductService.getProduct(productId);
-        return ResponseEntity.ok(productDto);
+        ProductDetailResponseDto ProductDetailResponseDto = buyerProductService.getProduct(productId);
+        return ResponseEntity.ok(ProductDetailResponseDto);
     }
 }

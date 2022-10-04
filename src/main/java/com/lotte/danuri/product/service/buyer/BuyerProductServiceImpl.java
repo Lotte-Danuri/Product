@@ -4,6 +4,7 @@ import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.entity.CategoryFirst;
 import com.lotte.danuri.product.model.entity.CategorySecond;
 import com.lotte.danuri.product.model.entity.CategoryThird;
@@ -36,7 +37,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         return result;
     }
 
-    public ProductDto getProduct(Long productId){
+    public ProductDetailResponseDto getProduct(Long productId){
         Optional<Product> product = productRepository.findById(productId);
 
         // 예외 처리
@@ -50,7 +51,11 @@ public class BuyerProductServiceImpl implements BuyerProductService{
             throw new ProductWasDeletedException("Product was deleted in the database", ErrorCode.PRODUCT_WAS_DELETED);
         }
 
-        ProductDto productDto = new ProductDto(product.get());
-        return productDto;
+        List<String> imageList = new ArrayList<>();
+        product.get().getImages().forEach(v -> {
+            imageList.add(v.getImageUrl());
+        });
+        ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList);
+        return productDetailResponseDto;
     }
 }
