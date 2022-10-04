@@ -46,6 +46,8 @@ public class ProductDto {
         this.stock = product.getStock();
         this.storeId = product.getStoreId();
         this.likeCount = product.getLikeCount();
+        this.productCode = product.getProductCode();
+        this.warranty = product.getWarranty();
         this.categoryFirstId = product.getCategoryFirst().getId();
         this.categorySecondId = product.getCategorySecond().getId();
         this.categoryThirdId = product.getCategoryThird().getId();
