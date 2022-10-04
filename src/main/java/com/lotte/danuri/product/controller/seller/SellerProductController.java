@@ -10,6 +10,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +22,11 @@ import java.util.List;
 public class SellerProductController {
     private final SellerProductService sellerProductService;
 
-    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 등록", notes = "상품을 등록한다.")
-    public ResponseEntity createProduct (@RequestBody ProductDto productDto){
+    public ResponseEntity createProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
-        sellerProductService.createProduct(productDto);
+        sellerProductService.createProduct(productDto, imageList);
         return ResponseEntity.ok().build();
     }
 
@@ -47,11 +48,11 @@ public class SellerProductController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 수정", notes = "하나의 상품을 수정한다.")
-    public ResponseEntity updateProduct (@RequestBody ProductDto productDto){
+    public ResponseEntity updateProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
-        sellerProductService.updateProduct(productDto);
+        sellerProductService.updateProduct(productDto, imageList);
         return ResponseEntity.ok().build();
     }
 }
