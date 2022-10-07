@@ -30,6 +30,7 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.303'
+	implementation group: 'org.springframework.kafka', name: 'spring-kafka'
 }
 
 tasks.named('test') {
