@@ -40,17 +40,16 @@ public class KafkaConsumerServiceImpl implements  KafkaConsumerService{
         Map<Object, Object> msgInfo = kafkaInit(kafkaMessage);
         Optional<Product> product = productRepository.findById(Long.valueOf(String.valueOf(msgInfo.get("productId"))));
 
-        // 상품이 존재하지 않을 경우 rollback
+        //TODO : 상품이 존재하지 않을 경우 rollback
         if (product.isEmpty()){
 
         }
 
-        // 상품 수량이 부족할 경우 rollback
+        //TODO : 상품 수량이 부족할 경우 rollback
         if(product.get().getStock() < 1){
 
         }
 
-        //log.info("------------------"+(product.get().getStock()-Long.valueOf(String.valueOf(msgInfo.get("productQuantity"))))+"-----------------");
         product.get().updateStock(product.get().getStock() - Long.valueOf(String.valueOf(msgInfo.get("productQuantity"))));
         productRepository.save(product.get());
     }
