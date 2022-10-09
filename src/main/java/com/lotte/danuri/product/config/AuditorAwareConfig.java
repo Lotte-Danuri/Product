@@ -14,12 +14,19 @@ public class AuditorAwareConfig implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        HttpServletRequest request = ((ServletRequestAttributes)
-                RequestContextHolder.currentRequestAttributes()).getRequest();
-        Long memberId = Long.parseLong(
-                Optional
-                        .ofNullable(request.getHeader(("memberId")))
-                        .orElse("-1"));
+        HttpServletRequest request = null;
+        long memberId = -1;
+
+        if ((ServletRequestAttributes)
+                RequestContextHolder.getRequestAttributes() != null){
+            request = ((ServletRequestAttributes)
+                    RequestContextHolder.getRequestAttributes()).getRequest();
+            memberId = Long.parseLong(
+                    Optional
+                            .ofNullable(request.getHeader(("memberId")))
+                            .orElse("-1"));
+        }
+        
         return Optional.ofNullable(memberId);
     }
 }
