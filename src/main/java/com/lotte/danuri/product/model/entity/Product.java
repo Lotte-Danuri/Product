@@ -69,4 +69,8 @@ public class Product extends BaseEntity{
     public void updateDeletedDate(LocalDateTime now) {
         this.deletedDate = now;
     }
+
+    public void updateStock(long stock) {
+        this.stock = stock;
+    }
 }
