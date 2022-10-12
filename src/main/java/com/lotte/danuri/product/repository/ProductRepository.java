@@ -8,4 +8,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByDeletedDateIsNull();
+
+    List<Product> findAllByPriceBetweenAndCategoryThirdIdInAndStoreIdIn(Double minPrice, Double maxPrice, List<Long> categoryThirdId, List<Long> storeId);
 }
