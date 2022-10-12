@@ -4,22 +4,18 @@ import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
-import com.lotte.danuri.product.model.entity.CategoryFirst;
-import com.lotte.danuri.product.model.entity.CategorySecond;
-import com.lotte.danuri.product.model.entity.CategoryThird;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
+import static com.lotte.danuri.product.util.DeDuplication.deduplication;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +53,28 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         });
         ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList);
         return productDetailResponseDto;
+    }
+
+    public List<ProductDto> getProductsByCondition(ProductByConditionDto productByConditionDto) {
+        //TODO : brandId를 통해서 storeId LIST 를 불러오는 API 호출
+        List<Long> storeId = new ArrayList<>();
+        storeId.add(1L);
+        storeId.add(2L);
+
+        List<Product> productList = productRepository.findAllByPriceBetweenAndCategoryThirdIdInAndStoreIdIn(
+                productByConditionDto.getMinPrice(),
+                productByConditionDto.getMaxPrice(),
+                productByConditionDto.getCategoryThirdId(),
+                storeId);
+
+        List<ProductDto> productDtoList = new ArrayList<>();
+
+        productList.forEach(v -> {
+            ProductDto productDto = new ProductDto(v);
+            productDtoList.add(productDto);
+        });
+
+        List<ProductDto> result = deduplication(productDtoList, ProductDto::getProductCode);
+        return result;
     }
 }

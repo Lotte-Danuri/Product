@@ -1,18 +1,15 @@
 package com.lotte.danuri.product.controller.buyer;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
-import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.service.buyer.BuyerProductService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,5 +33,13 @@ public class BuyerProductController {
 
         ProductDetailResponseDto ProductDetailResponseDto = buyerProductService.getProduct(productId);
         return ResponseEntity.ok(ProductDetailResponseDto);
+    }
+
+    @PostMapping(value = "/condition", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "상품 조건 조회", notes = "최소/최대 가격, 카테고리, 브랜드 조건에 의해 조회한다.")
+    public ResponseEntity<?> getProductsByCondition(@RequestBody ProductByConditionDto productByConditionDto){
+
+        List<ProductDto> productList = buyerProductService.getProductsByCondition(productByConditionDto);
+        return ResponseEntity.ok(productList);
     }
 }
