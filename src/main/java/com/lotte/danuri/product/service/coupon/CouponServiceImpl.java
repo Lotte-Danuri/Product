@@ -8,6 +8,7 @@ import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.CouponProductDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.CouponListDto;
 import com.lotte.danuri.product.model.entity.Coupon;
 import com.lotte.danuri.product.model.entity.CouponProduct;
 import com.lotte.danuri.product.model.entity.Product;
@@ -167,5 +168,19 @@ public class CouponServiceImpl implements CouponService {
             listCouponProduct.add(couponProduct);
         });
         couponProductRepository.saveAll(listCouponProduct);
+    }
+
+    @Override
+    public List<CouponDto> getCouponList(CouponListDto couponListDto){
+        List<Coupon> coupons = couponRepository.findAllByIdIn(couponListDto.getCouponId());
+
+        List<CouponDto> result = new ArrayList<>();
+
+        coupons.forEach(v -> {
+            CouponDto couponDto = new CouponDto(v);
+            result.add(couponDto);
+        });
+
+        return result;
     }
 }

@@ -46,6 +46,7 @@ public class SellerProductSuccessTest {
     private static final Long categorySecondId = 3L;
     private static final Long categoryThirdId = 3L;
 
+    /*
     @Test
     @DisplayName("상품 등록 테스트")
     void create_product_test() throws Exception {
@@ -92,6 +93,7 @@ public class SellerProductSuccessTest {
                 )
                 .andExpect(status().isOk());
     }
+    */
 
     @Test
     @DisplayName("상품 조회 테스트")
