@@ -2,6 +2,7 @@ package com.lotte.danuri.product.controller.coupon;
 
 import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.CouponListDto;
 import com.lotte.danuri.product.model.entity.Coupon;
 import com.lotte.danuri.product.service.coupon.CouponService;
 import io.swagger.annotations.ApiOperation;
@@ -52,5 +53,13 @@ public class CouponController {
 
         couponService.updateCoupon(couponDto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/list", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "쿠폰 리스트 조회", notes = "쿠폰 ID 리스트에 의해 쿠폰 리스트를 조회한다.")
+    public ResponseEntity getCouponList (@RequestBody CouponListDto couponListDto){
+
+        List<CouponDto> couponList = couponService.getCouponList(couponListDto);
+        return ResponseEntity.ok(couponList);
     }
 }

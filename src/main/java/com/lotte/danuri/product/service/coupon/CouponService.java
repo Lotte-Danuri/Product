@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.service.coupon;
 
 import com.lotte.danuri.product.model.dto.CouponDto;
+import com.lotte.danuri.product.model.dto.request.CouponListDto;
 import com.lotte.danuri.product.model.entity.Coupon;
 import org.apache.catalina.LifecycleState;
 
@@ -14,4 +15,6 @@ public interface CouponService {
     void deleteCoupon(Long id);
 
     void updateCoupon(CouponDto couponDto);
+
+    List<CouponDto> getCouponList(CouponListDto couponListDto);
 }
