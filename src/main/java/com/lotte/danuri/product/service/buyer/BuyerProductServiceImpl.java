@@ -5,6 +5,7 @@ import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
+import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
@@ -22,6 +23,8 @@ import static com.lotte.danuri.product.util.DeDuplication.deduplication;
 public class BuyerProductServiceImpl implements BuyerProductService{
 
     private final ProductRepository productRepository;
+
+    @Override
     public List<ProductDto> getProducts(){
         List<Product> products = productRepository.findAllByDeletedDateIsNull();
         List<ProductDto> result = new ArrayList<>();
@@ -33,6 +36,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         return result;
     }
 
+    @Override
     public ProductDetailResponseDto getProduct(Long productId){
         Optional<Product> product = productRepository.findById(productId);
 
@@ -55,6 +59,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         return productDetailResponseDto;
     }
 
+    @Override
     public List<ProductDto> getProductsByCondition(ProductByConditionDto productByConditionDto) {
         //TODO : brandId를 통해서 storeId LIST 를 불러오는 API 호출
         List<Long> storeId = new ArrayList<>();
@@ -75,6 +80,20 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         });
 
         List<ProductDto> result = deduplication(productDtoList, ProductDto::getProductCode);
+        return result;
+    }
+
+    @Override
+    public List<ProductDto> getProductList(ProductListDto productListDto){
+        List<Product> productList = productRepository.findAllByIdIn(productListDto.getProductId());
+
+        List<ProductDto> result = new ArrayList<>();
+
+        productList.forEach(v -> {
+            ProductDto productDto = new ProductDto(v);
+            result.add(productDto);
+        });
+
         return result;
     }
 }
