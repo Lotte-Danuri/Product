@@ -15,4 +15,5 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     )
     List<Coupon> findAll();
     List<Coupon> findAllByDeletedDateIsNull();
+    List<Coupon> findAllByIdIn(List<Long> couponId);
 }

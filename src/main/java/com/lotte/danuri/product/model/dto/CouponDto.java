@@ -42,6 +42,18 @@ public class CouponDto {
         this.productId = productId;
     }
 
+    public CouponDto(Coupon coupon) {
+        this.id = coupon.getId();
+        this.storeId = coupon.getStoreId();
+        this.name = coupon.getName();
+        this.contents = coupon.getContents();
+        this.startDate = coupon.getStartDate();
+        this.endDate = coupon.getEndDate();
+        this.discountRate = coupon.getDiscountRate();
+        this.minOrderPrice = coupon.getMinOrderPrice();
+        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
+    }
+
     public void updateProductId(List<Long> couponProductId) {
         productId = couponProductId;
     }
