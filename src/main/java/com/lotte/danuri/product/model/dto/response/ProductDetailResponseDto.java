@@ -30,14 +30,13 @@ public class ProductDetailResponseDto {
     private String categoryThirdName;
 
     private List<String> imageList;
-    public ProductDetailResponseDto(Product product, List<String> imageList) {
+    public ProductDetailResponseDto(Product product, List<String> imageList, String storeName) {
         this.id = product.getId();
         this.productName = product.getProductName();
         this.thumbnailUrl = product.getThumbnailUrl();
         this.price = product.getPrice();
         this.stock = product.getStock();
-        //TODO : storeId를 이용해 member 서비스에서 storeName 가져오기
-        this.storeName = "임시";
+        this.storeName = storeName;
         this.likeCount = product.getLikeCount();
         this.productCode = product.getProductCode();
         this.warranty = product.getWarranty();

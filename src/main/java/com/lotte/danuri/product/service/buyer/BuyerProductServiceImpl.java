@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.service.buyer;
 
+import com.lotte.danuri.product.client.MemberServiceClient;
 import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
@@ -23,6 +24,7 @@ import static com.lotte.danuri.product.util.DeDuplication.deduplication;
 public class BuyerProductServiceImpl implements BuyerProductService{
 
     private final ProductRepository productRepository;
+    private final MemberServiceClient memberServiceClient;
 
     @Override
     public List<ProductDto> getProducts(){
@@ -55,16 +57,22 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         product.get().getImages().forEach(v -> {
             imageList.add(v.getImageUrl());
         });
-        ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList);
+
+        String storeName = memberServiceClient.getNames(product.get().getStoreId());
+        ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList, storeName);
         return productDetailResponseDto;
     }
 
     @Override
     public List<ProductDto> getProductsByCondition(ProductByConditionDto productByConditionDto) {
-        //TODO : brandId를 통해서 storeId LIST 를 불러오는 API 호출
+        List<Long> brandId = productByConditionDto.getBrandId();
         List<Long> storeId = new ArrayList<>();
-        storeId.add(1L);
-        storeId.add(2L);
+
+        brandId.forEach(v -> {
+            memberServiceClient.getStoreId(v).forEach(w -> {
+                storeId.add(w);
+            });
+        });
 
         List<Product> productList = productRepository.findAllByPriceBetweenAndCategoryThirdIdInAndStoreIdIn(
                 productByConditionDto.getMinPrice(),
