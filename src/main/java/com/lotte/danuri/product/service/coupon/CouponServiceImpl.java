@@ -15,6 +15,7 @@ import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.CouponProductRepository;
 import com.lotte.danuri.product.repository.CouponRepository;
 import com.lotte.danuri.product.repository.ProductRepository;
+import com.lotte.danuri.product.service.messagequeue.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -33,6 +34,8 @@ public class CouponServiceImpl implements CouponService {
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
     private final CouponProductRepository couponProductRepository;
+    private final KafkaProducerService kafkaProducerService;
+
     @Override
     public void createCoupon(CouponDto couponDto) {
         //스토어 ID 예외처리 추가해야 함.
@@ -62,6 +65,12 @@ public class CouponServiceImpl implements CouponService {
                         .maxDiscountPrice(couponDto.getMaxDiscountPrice())
                         .storeId(couponDto.getStoreId())
                         .build()
+        );
+
+        kafkaProducerService.send("coupon-insert", CouponDto.builder()
+                .id(coupon.getId())
+                .storeId(coupon.getStoreId())
+                .build()
         );
 
         // 쿠폰에 적용된 상품 INSERT
