@@ -73,4 +73,8 @@ public class Product extends BaseEntity{
     public void updateStock(long stock) {
         this.stock = stock;
     }
+
+    public void updateLikeCount(long likeCount) {
+        this.likeCount = likeCount;
+    }
 }

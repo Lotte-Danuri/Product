@@ -53,4 +53,19 @@ public class KafkaConsumerServiceImpl implements  KafkaConsumerService{
         product.get().updateStock(product.get().getStock() - Long.valueOf(String.valueOf(msgInfo.get("productQuantity"))));
         productRepository.save(product.get());
     }
+
+    @KafkaListener(topics = "like-insert-delete")
+    public void updateLikeCount(String kafkaMessage){
+
+        Map<Object, Object> msgInfo = kafkaInit(kafkaMessage);
+        Optional<Product> product = productRepository.findById(Long.valueOf(String.valueOf(msgInfo.get("productId"))));
+
+        if ((Boolean)msgInfo.get("isInsert")){
+            product.get().updateLikeCount(product.get().getLikeCount() + 1);
+        }
+        else{
+            product.get().updateLikeCount(product.get().getLikeCount() - 1);
+        }
+        productRepository.save(product.get());
+    }
 }
