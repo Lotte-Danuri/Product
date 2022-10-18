@@ -93,7 +93,10 @@ public class BuyerProductServiceImpl implements BuyerProductService{
 
     @Override
     public List<ProductDto> getProductList(ProductListDto productListDto){
-        List<Product> productList = productRepository.findAllByIdIn(productListDto.getProductId());
+        List<Product> productList = new ArrayList<>();
+        productListDto.getProductId().forEach(v -> {
+            productList.add(productRepository.findById(v).get());
+        });
 
         List<ProductDto> result = new ArrayList<>();
 
