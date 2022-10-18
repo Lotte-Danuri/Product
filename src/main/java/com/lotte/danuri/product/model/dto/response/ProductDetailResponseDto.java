@@ -20,6 +20,7 @@ public class ProductDetailResponseDto {
     private String thumbnailUrl;
     private Double price;
     private Long stock;
+    private Long storeId;
     private String storeName;
     private Long likeCount;
     private String productCode;
@@ -36,6 +37,7 @@ public class ProductDetailResponseDto {
         this.thumbnailUrl = product.getThumbnailUrl();
         this.price = product.getPrice();
         this.stock = product.getStock();
+        this.storeId = product.getStoreId();
         this.storeName = storeName;
         this.likeCount = product.getLikeCount();
         this.productCode = product.getProductCode();
