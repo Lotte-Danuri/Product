@@ -29,12 +29,14 @@ public class BuyerProductServiceImpl implements BuyerProductService{
     @Override
     public List<ProductDto> getProducts(){
         List<Product> products = productRepository.findAllByDeletedDateIsNull();
-        List<ProductDto> result = new ArrayList<>();
+        List<ProductDto> ProductDtoList = new ArrayList<>();
 
         products.forEach(v -> {
             ProductDto productDto = new ProductDto(v);
-            result.add(productDto);
+            ProductDtoList.add(productDto);
         });
+
+        List<ProductDto> result = deduplication(ProductDtoList, ProductDto::getProductCode);
         return result;
     }
 
@@ -103,6 +105,25 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         productList.forEach(v -> {
             ProductDto productDto = new ProductDto(v);
             result.add(productDto);
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<ProductDetailResponseDto> getProductListByProductCode(String productCode){
+        List<ProductDetailResponseDto> result = new ArrayList<>();
+
+        List<Product> productList = productRepository.findAllByProductCode(productCode);
+        productList.forEach(v -> {
+            List<String> imageList = new ArrayList<>();
+            v.getImages().forEach(w -> {
+                imageList.add(w.getImageUrl());
+            });
+
+            String storeName = memberServiceClient.getNames(v.getStoreId());
+            ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(v,imageList, storeName);
+            result.add(productDetailResponseDto);
         });
 
         return result;

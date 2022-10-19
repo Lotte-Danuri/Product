@@ -51,4 +51,12 @@ public class BuyerProductController {
         List<ProductDto> productList = buyerProductService.getProductList(productListDto);
         return ResponseEntity.ok(productList);
     }
+
+    @GetMapping(value = "/list/{productCode}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "상품 코드에 의한 상품 상세 리스트 조회", notes = "상품 코드에 의해 상품 상세 리스트를 조회한다.")
+    public ResponseEntity<?> getProductListByProductCode(@PathVariable("productCode") String productCode){
+
+        List<ProductDetailResponseDto> ProductDetailResponseDto = buyerProductService.getProductListByProductCode(productCode);
+        return ResponseEntity.ok(ProductDetailResponseDto);
+    }
 }

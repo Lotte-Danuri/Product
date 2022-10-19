@@ -16,4 +16,6 @@ public interface BuyerProductService {
     List<ProductDto> getProductsByCondition(ProductByConditionDto productByConditionDto);
 
     List<ProductDto> getProductList(ProductListDto productListDto);
+
+    List<ProductDetailResponseDto> getProductListByProductCode(String productCode);
 }
