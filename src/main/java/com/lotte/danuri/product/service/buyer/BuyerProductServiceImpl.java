@@ -11,6 +11,9 @@ import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,10 +24,12 @@ import static com.lotte.danuri.product.util.DeDuplication.deduplication;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BuyerProductServiceImpl implements BuyerProductService{
 
     private final ProductRepository productRepository;
     private final MemberServiceClient memberServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     @Override
     public List<ProductDto> getProducts(){
@@ -42,6 +47,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
 
     @Override
     public ProductDetailResponseDto getProduct(Long productId){
+        log.info("Before Retrieve [getProduct] Method IN [Product-Service]");
         Optional<Product> product = productRepository.findById(productId);
 
         // 예외 처리
@@ -59,9 +65,13 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         product.get().getImages().forEach(v -> {
             imageList.add(v.getImageUrl());
         });
-
-        String storeName = memberServiceClient.getNames(product.get().getStoreId());
+        log.info("Before Call [getNames] Method IN [Product-Service]");
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+        String storeName = circuitBreaker.run(() -> memberServiceClient.getNames(product.get().getStoreId()),
+                throwable -> "");
+        log.info("After Call [getNames] Method IN [Product-Service]");
         ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList, storeName);
+        log.info("After Retrieve [getProduct] Method IN [Product-Service]");
         return productDetailResponseDto;
     }
 
@@ -71,7 +81,12 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         List<Long> storeId = new ArrayList<>();
 
         brandId.forEach(v -> {
-            memberServiceClient.getStoreId(v).forEach(w -> {
+            log.info("Before Call [getStoreId] Method IN [Product-Service]");
+            CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+            List<Long> storeIdList = circuitBreaker.run(() -> memberServiceClient.getStoreId(v),
+                    throwable -> new ArrayList<>());
+            log.info("Before After [getStoreId] Method IN [Product-Service]");
+            storeIdList.forEach(w -> {
                 storeId.add(w);
             });
         });
@@ -121,7 +136,11 @@ public class BuyerProductServiceImpl implements BuyerProductService{
                 imageList.add(w.getImageUrl());
             });
 
-            String storeName = memberServiceClient.getNames(v.getStoreId());
+            log.info("Before Call [getNames] Method IN [Product-Service]");
+            CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+            String storeName = circuitBreaker.run(() -> memberServiceClient.getNames(v.getStoreId()),
+                    throwable -> "");
+            log.info("After Call [getNames] Method IN [Product-Service]");
             ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(v,imageList, storeName);
             result.add(productDetailResponseDto);
         });
