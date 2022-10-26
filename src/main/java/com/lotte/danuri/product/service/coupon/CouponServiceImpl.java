@@ -17,6 +17,7 @@ import com.lotte.danuri.product.repository.CouponRepository;
 import com.lotte.danuri.product.repository.ProductRepository;
 import com.lotte.danuri.product.service.messagequeue.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CouponServiceImpl implements CouponService {
 
     private final ProductRepository productRepository;
@@ -87,6 +89,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public List<CouponDto> getCoupons(){
+        log.info("Before Retrieve [getCoupons] Method IN [Product-Service]");
         List<Coupon> coupons = couponRepository.findAll();
         List<CouponDto> result = new ArrayList<>();
 
@@ -98,6 +101,7 @@ public class CouponServiceImpl implements CouponService {
             CouponDto couponDto = new CouponDto(v,productId);
             result.add(couponDto);
         });
+        log.info("After Retrieve [getCoupons] Method IN [Product-Service]");
         return result;
     }
 
