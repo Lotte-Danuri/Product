@@ -16,4 +16,6 @@ public interface SellerProductService {
     List<ProductDto> getProducts();
 
     String uploadImage(MultipartFile multipartFile);
+
+    List<ProductDto> getProductIds(Long storeId);
 }

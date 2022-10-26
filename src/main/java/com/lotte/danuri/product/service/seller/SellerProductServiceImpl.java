@@ -178,4 +178,9 @@ public class SellerProductServiceImpl implements SellerProductService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<ProductDto> getProductIds(Long storeId){
+        return new ArrayList<>();
+    }
 }

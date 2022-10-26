@@ -33,6 +33,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
 
     @Override
     public List<ProductDto> getProducts(){
+        log.info("Before Retrieve [getProducts] Method IN [Product-Service]");
         List<Product> products = productRepository.findAllByDeletedDateIsNull();
         List<ProductDto> ProductDtoList = new ArrayList<>();
 
@@ -42,6 +43,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         });
 
         List<ProductDto> result = deduplication(ProductDtoList, ProductDto::getProductCode);
+        log.info("After Retrieve [getProducts] Method IN [Product-Service]");
         return result;
     }
 
