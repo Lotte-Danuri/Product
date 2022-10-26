@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.controller.seller;
 
+import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.service.seller.SellerProductService;
@@ -54,5 +55,13 @@ public class SellerProductController {
 
         sellerProductService.updateProduct(productDto, imageList);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/list/{storeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "상품 ID 리스트 조회", notes = "스토어 Id에 의해 상품 ID 리스트를 조회한다.")
+    public ResponseEntity<?> getProductIds(@PathVariable("storeId") Long storeId){
+
+        List<ProductDto> productDtoList = sellerProductService.getProductIds(storeId);
+        return ResponseEntity.ok(productDtoList);
     }
 }
