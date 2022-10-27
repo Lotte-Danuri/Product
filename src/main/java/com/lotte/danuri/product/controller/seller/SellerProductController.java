@@ -1,19 +1,15 @@
 package com.lotte.danuri.product.controller.seller;
 
-import com.lotte.danuri.product.model.dto.request.ProductListDto;
-import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.service.seller.SellerProductService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -57,11 +53,11 @@ public class SellerProductController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/list/{storeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "상품 ID 리스트 조회", notes = "스토어 Id에 의해 상품 ID 리스트를 조회한다.")
-    public ResponseEntity<?> getProductIds(@PathVariable("storeId") Long storeId){
+    @GetMapping(value = "/{storeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "스토어의 상품 리스트 조회", notes = "스토어 Id에 의해 구매 전환율을 포함한 상품 목록을 조회한다.")
+    public ResponseEntity<?> getProductsByStoreId(@PathVariable("storeId") Long storeId){
 
-        List<ProductDto> productDtoList = sellerProductService.getProductIds(storeId);
-        return ResponseEntity.ok(productDtoList);
+        List<SellerProductResponseDto> sellerProductResponseDto= sellerProductService.getProductsByStoreId(storeId);
+        return ResponseEntity.ok(sellerProductResponseDto);
     }
 }
