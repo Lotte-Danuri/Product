@@ -1,5 +1,7 @@
 package com.lotte.danuri.product.service.seller;
 
+import com.lotte.danuri.product.model.dto.request.ProductListDto;
+import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +19,5 @@ public interface SellerProductService {
 
     String uploadImage(MultipartFile multipartFile);
 
-    List<ProductDto> getProductIds(Long storeId);
+    List<SellerProductResponseDto> getProductsByStoreId(Long storeId);
 }

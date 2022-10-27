@@ -1,15 +1,22 @@
 package com.lotte.danuri.product.service.seller;
 
+import com.lotte.danuri.product.client.OrderServiceClient;
+import com.lotte.danuri.product.client.RecommendServiceClient;
 import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.CategoryWasDeletedException;
 import com.lotte.danuri.product.exception.CategoryNotFoundException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.ProductListDto;
+import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.*;
 import com.lotte.danuri.product.repository.*;
 import com.lotte.danuri.product.util.S3Upload;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SellerProductServiceImpl implements SellerProductService {
 
     private final ProductRepository productRepository;
@@ -29,7 +37,9 @@ public class SellerProductServiceImpl implements SellerProductService {
     private final CategoryThirdRepository categoryThirdRepository;
     private final ImageRepository imageRepository;
     private final S3Upload s3Upload;
-
+    private final OrderServiceClient orderServiceClient;
+    private final RecommendServiceClient recommendServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
     @Override
     public void createProduct(ProductDto productDto, List<MultipartFile> multipartFileList) {
         Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(productDto.getCategoryFirstId());
@@ -180,7 +190,37 @@ public class SellerProductServiceImpl implements SellerProductService {
     }
 
     @Override
-    public List<ProductDto> getProductIds(Long storeId){
-        return new ArrayList<>();
+    public List<SellerProductResponseDto> getProductsByStoreId(Long storeId){
+        List<SellerProductResponseDto> sellerProductResponseDtos = new ArrayList<>();
+
+        List<Product> products = productRepository.findAllByDeletedDateIsNullAndStoreId(storeId);
+        ProductListDto productListDto = ProductListDto.builder().
+                productId(products.stream()
+                                  .map(product -> product.getId())
+                                  .toList())
+                .build();
+
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+
+        log.info("Before Call [getClickCount] Method IN [Product-Service]");
+        List<Long> productClickCounts = circuitBreaker.run(() -> recommendServiceClient.getClickCount(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getClickCount] Method IN [Product-Service]");
+
+        log.info("Before Call [getOrdersCount] Method IN [Product-Service]");
+        List<Long> productOrderCounts = circuitBreaker.run(() -> orderServiceClient.getOrdersCount(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getOrdersCount] Method IN [Product-Service]");
+
+        for(int i=0; i<products.size(); i++){
+            sellerProductResponseDtos.add(new SellerProductResponseDto(
+                    products.get(i),
+                    productClickCounts.get(i),
+                    productOrderCounts.get(i),
+                    productOrderCounts.get(i)==0?0:productOrderCounts.get(i).doubleValue()/productClickCounts.get(i).doubleValue()*100
+                )
+            );
+        }
+        return sellerProductResponseDtos;
     }
 }
