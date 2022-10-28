@@ -21,7 +21,7 @@ public class SellerProductController {
 
     @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 등록", notes = "상품을 등록한다.")
-    public ResponseEntity createProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
+    public ResponseEntity createProduct (ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
         sellerProductService.createProduct(productDto, imageList);
         return ResponseEntity.ok().build();
