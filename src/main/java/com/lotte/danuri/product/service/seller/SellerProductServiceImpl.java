@@ -229,57 +229,51 @@ public class SellerProductServiceImpl implements SellerProductService {
     public List<ProductDto> getProductsByCategory(CategoryDto categoryDto){
 
         if (categoryDto.getCategoryFirstId() != null) {
-            categoryDto.getCategoryFirstId().forEach(v -> {
-                Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(v);
-                if (categoryFirst.isEmpty()) {
-                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
-                }
-                if (categoryFirst.get().getDeletedDate() != null) {
-                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
-                }
-            });
+            Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(categoryDto.getCategoryFirstId());
+            if (categoryFirst.isEmpty()) {
+                throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+            }
+            if (categoryFirst.get().getDeletedDate() != null) {
+                throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+            }
         }
 
         if (categoryDto.getCategorySecondId() != null) {
-            categoryDto.getCategorySecondId().forEach(v -> {
-                Optional<CategorySecond> categorySecond = categorySecondRepository.findById(v);
-                if (categorySecond.isEmpty()) {
-                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
-                }
-                if (categorySecond.get().getDeletedDate() != null) {
-                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
-                }
-            });
+            Optional<CategorySecond> categorySecond = categorySecondRepository.findById(categoryDto.getCategorySecondId());
+            if (categorySecond.isEmpty()) {
+                throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+            }
+            if (categorySecond.get().getDeletedDate() != null) {
+                throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+            }
         }
 
         if (categoryDto.getCategoryThirdId() != null) {
-            categoryDto.getCategoryThirdId().forEach(v -> {
-                Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(v);
-                if (categoryThird.isEmpty()) {
-                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
-                }
-                if (categoryThird.get().getDeletedDate() != null) {
-                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
-                }
-            });
+            Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(categoryDto.getCategoryThirdId());
+            if (categoryThird.isEmpty()) {
+                throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+            }
+            if (categoryThird.get().getDeletedDate() != null) {
+                throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+            }
         }
 
         List<Product> productList = new ArrayList<>();
 
         if (categoryDto.getCategorySecondId() == null) {
-            productList = productRepository.findAllByStoreIdAndCategoryFirstIdInAndDeletedDateIsNull(
+            productList = productRepository.findAllByStoreIdAndCategoryFirstIdAndDeletedDateIsNull(
                     categoryDto.getStordId(),
                     categoryDto.getCategoryFirstId()
             );
         }
         else if (categoryDto.getCategoryThirdId() == null) {
-            productList = productRepository.findAllByStoreIdAndCategorySecondIdInAndDeletedDateIsNull(
+            productList = productRepository.findAllByStoreIdAndCategorySecondIdAndDeletedDateIsNull(
                     categoryDto.getStordId(),
                     categoryDto.getCategorySecondId()
             );
         }
         else{
-            productList = productRepository.findAllByStoreIdAndCategoryThirdIdInAndDeletedDateIsNull(
+            productList = productRepository.findAllByStoreIdAndCategoryThirdIdAndDeletedDateIsNull(
                     categoryDto.getStordId(),
                     categoryDto.getCategoryThirdId()
             );
