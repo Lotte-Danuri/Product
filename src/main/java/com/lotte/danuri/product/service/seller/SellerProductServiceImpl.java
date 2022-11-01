@@ -260,7 +260,13 @@ public class SellerProductServiceImpl implements SellerProductService {
 
         List<Product> productList = new ArrayList<>();
 
-        if (categoryDto.getCategorySecondId() == null) {
+
+        if (categoryDto.getCategoryFirstId() == null) {
+            productList = productRepository.findAllByStoreIdAndDeletedDateIsNull(
+                    categoryDto.getStordId()
+            );
+        }
+        else if (categoryDto.getCategorySecondId() == null) {
             productList = productRepository.findAllByStoreIdAndCategoryFirstIdAndDeletedDateIsNull(
                     categoryDto.getStordId(),
                     categoryDto.getCategoryFirstId()
