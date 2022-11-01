@@ -64,7 +64,7 @@ public class SellerProductController {
     }
 
     @PostMapping(value = "/category", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "카테고리에 따른 상품 조회", notes = "카테고리 Id에 의해 상품 목록을 조회한다.")
+    @ApiOperation(value = "카테고리에 따른 상품 조회", notes = "카테고리 대,중,소에 의해 상품 목록을 조회한다.")
     public ResponseEntity<?> getProductsByCategory(@RequestBody CategoryDto categoryDto){
 
         List<ProductDto> productDtoList = sellerProductService.getProductsByCategory(categoryDto);

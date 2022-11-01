@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class CategoryDto {
     private Long stordId;
-    private List<Long> categoryFirstId;
-    private List<Long> categorySecondId;
-    private List<Long> categoryThirdId;
+    private Long categoryFirstId;
+    private Long categorySecondId;
+    private Long categoryThirdId;
 }
