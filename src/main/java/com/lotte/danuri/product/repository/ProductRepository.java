@@ -17,4 +17,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByProductCode(String productCode);
 
     List<Product> findAllByDeletedDateIsNullAndStoreId(Long storeId);
+
+    List<Product> findAllByStoreIdAndCategoryFirstIdInAndDeletedDateIsNull(Long stordId, List<Long> categoryFirstId);
+
+    List<Product> findAllByStoreIdAndCategorySecondIdInAndDeletedDateIsNull(Long stordId, List<Long> categorySecondId);
+
+    List<Product> findAllByStoreIdAndCategoryThirdIdInAndDeletedDateIsNull(Long stordId, List<Long> categoryThirdId);
 }
