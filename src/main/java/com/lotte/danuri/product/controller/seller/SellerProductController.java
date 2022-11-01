@@ -1,7 +1,9 @@
 package com.lotte.danuri.product.controller.seller;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.CategoryDto;
 import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
+import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.service.seller.SellerProductService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +61,13 @@ public class SellerProductController {
 
         List<SellerProductResponseDto> sellerProductResponseDto= sellerProductService.getProductsByStoreId(storeId);
         return ResponseEntity.ok(sellerProductResponseDto);
+    }
+
+    @PostMapping(value = "/category", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "카테고리에 따른 상품 조회", notes = "카테고리 Id에 의해 상품 목록을 조회한다.")
+    public ResponseEntity<?> getProductsByCategory(@RequestBody CategoryDto categoryDto){
+
+        List<ProductDto> productDtoList = sellerProductService.getProductsByCategory(categoryDto);
+        return ResponseEntity.ok(productDtoList);
     }
 }

@@ -8,6 +8,7 @@ import com.lotte.danuri.product.exception.CategoryNotFoundException;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.CategoryDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.*;
@@ -222,5 +223,74 @@ public class SellerProductServiceImpl implements SellerProductService {
             );
         }
         return sellerProductResponseDtos;
+    }
+
+    @Override
+    public List<ProductDto> getProductsByCategory(CategoryDto categoryDto){
+
+        if (categoryDto.getCategoryFirstId() != null) {
+            categoryDto.getCategoryFirstId().forEach(v -> {
+                Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(v);
+                if (categoryFirst.isEmpty()) {
+                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+                }
+                if (categoryFirst.get().getDeletedDate() != null) {
+                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+                }
+            });
+        }
+
+        if (categoryDto.getCategorySecondId() != null) {
+            categoryDto.getCategorySecondId().forEach(v -> {
+                Optional<CategorySecond> categorySecond = categorySecondRepository.findById(v);
+                if (categorySecond.isEmpty()) {
+                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+                }
+                if (categorySecond.get().getDeletedDate() != null) {
+                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+                }
+            });
+        }
+
+        if (categoryDto.getCategoryThirdId() != null) {
+            categoryDto.getCategoryThirdId().forEach(v -> {
+                Optional<CategoryThird> categoryThird = categoryThirdRepository.findById(v);
+                if (categoryThird.isEmpty()) {
+                    throw new CategoryNotFoundException("Category not present in the database", ErrorCode.CATEGORY_NOT_FOUND);
+                }
+                if (categoryThird.get().getDeletedDate() != null) {
+                    throw new CategoryWasDeletedException("Category was deleted in the database", ErrorCode.CATEGORY_WAS_DELETED);
+                }
+            });
+        }
+
+        List<Product> productList = new ArrayList<>();
+
+        if (categoryDto.getCategorySecondId() == null) {
+            productList = productRepository.findAllByStoreIdAndCategoryFirstIdInAndDeletedDateIsNull(
+                    categoryDto.getStordId(),
+                    categoryDto.getCategoryFirstId()
+            );
+        }
+        else if (categoryDto.getCategoryThirdId() == null) {
+            productList = productRepository.findAllByStoreIdAndCategorySecondIdInAndDeletedDateIsNull(
+                    categoryDto.getStordId(),
+                    categoryDto.getCategorySecondId()
+            );
+        }
+        else{
+            productList = productRepository.findAllByStoreIdAndCategoryThirdIdInAndDeletedDateIsNull(
+                    categoryDto.getStordId(),
+                    categoryDto.getCategoryThirdId()
+            );
+        }
+
+        List<ProductDto> productDtoList = new ArrayList<>();
+
+        productList.forEach(v -> {
+            productDtoList.add(new ProductDto(v));
+        });
+
+        return productDtoList;
     }
 }
