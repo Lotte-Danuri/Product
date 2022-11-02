@@ -45,11 +45,18 @@ public class BuyerProductController {
         return ResponseEntity.ok(productList);
     }
 
-    @PostMapping(value = "/list", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "상품 리스트 조회", notes = "상품 Code 리스트에 의해 상품 리스트를 조회한다.")
-    public ResponseEntity<?> getProductList(@RequestBody ProductListByCodeDto productListByCodeDto){
+    @PostMapping(value = "/productId", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "상품 리스트 조회", notes = "상품 Id 리스트에 의해 상품 리스트를 조회한다.")
+    public ResponseEntity<?> getProductListById(@RequestBody ProductListDto productListDto){
 
-        List<ProductDto> productList = buyerProductService.getProductList(productListByCodeDto);
+        List<ProductDto> productList = buyerProductService.getProductListById(productListDto);
+        return ResponseEntity.ok(productList);
+    }
+    @PostMapping(value = "/productCode", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "상품 리스트 조회", notes = "상품 Code 리스트에 의해 상품 리스트를 조회한다.")
+    public ResponseEntity<?> getProductListByCode(@RequestBody ProductListByCodeDto productListByCodeDto){
+
+        List<ProductDto> productList = buyerProductService.getProductListByCode(productListByCodeDto);
         return ResponseEntity.ok(productList);
     }
 
