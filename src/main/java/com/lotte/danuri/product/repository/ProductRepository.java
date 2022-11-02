@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.repository;
 
+import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -25,4 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByStoreIdAndCategoryThirdIdAndDeletedDateIsNull(Long stordId, Long categoryThirdId);
 
     List<Product> findAllByStoreIdAndDeletedDateIsNull(Long stordId);
+
+    Product findByIdAndDeletedDateIsNull(Long id);
 }

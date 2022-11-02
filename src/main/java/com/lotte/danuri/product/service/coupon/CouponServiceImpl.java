@@ -9,6 +9,7 @@ import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.CouponProductDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.CouponListDto;
+import com.lotte.danuri.product.model.dto.response.CouponByStoreDto;
 import com.lotte.danuri.product.model.entity.Coupon;
 import com.lotte.danuri.product.model.entity.CouponProduct;
 import com.lotte.danuri.product.model.entity.Product;
@@ -192,6 +193,24 @@ public class CouponServiceImpl implements CouponService {
         coupons.forEach(v -> {
             CouponDto couponDto = new CouponDto(v);
             result.add(couponDto);
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<CouponByStoreDto> getCouponsByStoreId(Long storeId){
+        List<Coupon> coupons = couponRepository.findAllByStoreId(storeId);
+        List<CouponByStoreDto> result = new ArrayList<>();
+
+        coupons.forEach(v -> {
+            List<ProductDto> productDtoList = new ArrayList<>();
+            v.getCouponProducts().forEach(w -> {
+                ProductDto productDto = new ProductDto(productRepository.findByIdAndDeletedDateIsNull(w.getProduct().getId()));
+                productDtoList.add(productDto);
+            });
+            CouponByStoreDto couponByStoreDto = new CouponByStoreDto(v,productDtoList);
+            result.add(couponByStoreDto);
         });
 
         return result;
