@@ -1,7 +1,11 @@
-package com.lotte.danuri.product.model.dto;
+package com.lotte.danuri.product.model.dto.response;
 
+import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.entity.Coupon;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -11,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
-public class CouponDto {
+public class CouponByStoreDto {
 
     private Long id;
     private Long storeId;
@@ -27,9 +31,9 @@ public class CouponDto {
     private Long minOrderPrice;
     private Long maxDiscountPrice;
 
-    private List<Long> productId;
+    private List<ProductDto> productDtoList;
 
-    public CouponDto(Coupon coupon, List<Long> productId) {
+    public CouponByStoreDto(Coupon coupon, List<ProductDto> productDtoList) {
         this.id = coupon.getId();
         this.storeId = coupon.getStoreId();
         this.name = coupon.getName();
@@ -39,10 +43,10 @@ public class CouponDto {
         this.discountRate = coupon.getDiscountRate();
         this.minOrderPrice = coupon.getMinOrderPrice();
         this.maxDiscountPrice = coupon.getMaxDiscountPrice();
-        this.productId = productId;
+        this.productDtoList = productDtoList;
     }
 
-    public CouponDto(Coupon coupon) {
+    public CouponByStoreDto(Coupon coupon) {
         this.id = coupon.getId();
         this.storeId = coupon.getStoreId();
         this.name = coupon.getName();
@@ -52,9 +56,5 @@ public class CouponDto {
         this.discountRate = coupon.getDiscountRate();
         this.minOrderPrice = coupon.getMinOrderPrice();
         this.maxDiscountPrice = coupon.getMaxDiscountPrice();
-    }
-
-    public void updateProductId(List<Long> couponProductId) {
-        productId = couponProductId;
     }
 }
