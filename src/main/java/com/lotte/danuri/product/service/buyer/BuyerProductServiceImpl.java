@@ -6,6 +6,7 @@ import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
+import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
@@ -111,10 +112,11 @@ public class BuyerProductServiceImpl implements BuyerProductService{
     }
 
     @Override
-    public List<ProductDto> getProductList(ProductListDto productListDto){
+    public List<ProductDto> getProductList(ProductListByCodeDto productListByCodeDto){
         List<Product> productList = new ArrayList<>();
-        productListDto.getProductId().forEach(v -> {
-            productList.add(productRepository.findById(v).get());
+        productListByCodeDto.getProductCode().forEach(v -> {
+            List<Product> products = productRepository.findAllByProductCodeAndDeletedDateIsNull(v);
+            productList.add(products.get(0));
         });
 
         List<ProductDto> result = new ArrayList<>();

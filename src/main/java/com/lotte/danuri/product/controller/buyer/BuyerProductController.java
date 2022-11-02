@@ -2,6 +2,7 @@ package com.lotte.danuri.product.controller.buyer;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
+import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.service.buyer.BuyerProductService;
@@ -45,10 +46,10 @@ public class BuyerProductController {
     }
 
     @PostMapping(value = "/list", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ApiOperation(value = "상품 리스트 조회", notes = "상품 ID 리스트에 의해 상품 리스트를 조회한다.")
-    public ResponseEntity<?> getProductList(@RequestBody ProductListDto productListDto){
+    @ApiOperation(value = "상품 리스트 조회", notes = "상품 Code 리스트에 의해 상품 리스트를 조회한다.")
+    public ResponseEntity<?> getProductList(@RequestBody ProductListByCodeDto productListByCodeDto){
 
-        List<ProductDto> productList = buyerProductService.getProductList(productListDto);
+        List<ProductDto> productList = buyerProductService.getProductList(productListByCodeDto);
         return ResponseEntity.ok(productList);
     }
 
