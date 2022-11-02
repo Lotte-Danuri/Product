@@ -112,7 +112,7 @@ public class BuyerProductServiceImpl implements BuyerProductService{
     }
 
     @Override
-    public List<ProductDto> getProductList(ProductListByCodeDto productListByCodeDto){
+    public List<ProductDto> getProductListByCode(ProductListByCodeDto productListByCodeDto){
         List<Product> productList = new ArrayList<>();
         productListByCodeDto.getProductCode().forEach(v -> {
             List<Product> products = productRepository.findAllByProductCodeAndDeletedDateIsNull(v);
@@ -149,6 +149,21 @@ public class BuyerProductServiceImpl implements BuyerProductService{
             result.add(productDetailResponseDto);
         });
 
+        return result;
+    }
+
+    @Override
+    public List<ProductDto> getProductListById(ProductListDto productListDto){
+        List<Product> productList = new ArrayList<>();
+        productListDto.getProductId().forEach(v -> {
+            productList.add(productRepository.findById(v).get());
+        });
+
+        List<ProductDto> result = new ArrayList<>();
+        productList.forEach(v -> {
+            ProductDto productDto = new ProductDto(v);
+            result.add(productDto);
+        });
         return result;
     }
 }

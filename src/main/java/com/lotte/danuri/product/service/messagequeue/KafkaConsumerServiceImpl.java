@@ -12,6 +12,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,18 +55,25 @@ public class KafkaConsumerServiceImpl implements  KafkaConsumerService{
         productRepository.save(product.get());
     }
 
-    @KafkaListener(topics = "like-insert-delete")
-    public void updateLikeCount(String kafkaMessage){
+    @KafkaListener(topics = "like-insert")
+    public void likeInsertCount(String kafkaMessage){
 
         Map<Object, Object> msgInfo = kafkaInit(kafkaMessage);
-        Optional<Product> product = productRepository.findById(Long.valueOf(String.valueOf(msgInfo.get("productId"))));
+        List<Product> productList = productRepository.findAllByProductCodeAndDeletedDateIsNull(String.valueOf(msgInfo.get("productCode")));
+        productList.forEach(v -> {
+            v.updateLikeCount(v.getLikeCount()+1);
+        });
+        productRepository.saveAll(productList);
+    }
 
-        if ((Boolean)msgInfo.get("isInsert")){
-            product.get().updateLikeCount(product.get().getLikeCount() + 1);
-        }
-        else{
-            product.get().updateLikeCount(product.get().getLikeCount() - 1);
-        }
-        productRepository.save(product.get());
+    @KafkaListener(topics = "like-delete")
+    public void likeDeleteCount(String kafkaMessage){
+
+        Map<Object, Object> msgInfo = kafkaInit(kafkaMessage);
+        List<Product> productList = productRepository.findAllByProductCodeAndDeletedDateIsNull(String.valueOf(msgInfo.get("productCode")));
+        productList.forEach(v -> {
+            v.updateLikeCount(v.getLikeCount()-1);
+        });
+        productRepository.saveAll(productList);
     }
 }
