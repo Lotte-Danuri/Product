@@ -24,8 +24,8 @@ public class CouponDto {
     private LocalDateTime endDate;
 
     private Double discountRate;
-    private Double minOrderPrice;
-    private Double maxDiscountPrice;
+    private Long minOrderPrice;
+    private Long maxDiscountPrice;
 
     private List<Long> productId;
 

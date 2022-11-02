@@ -25,8 +25,8 @@ public class Coupon extends BaseEntity{
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDate;
     private Double discountRate;
-    private Double minOrderPrice;
-    private Double maxDiscountPrice;
+    private Long minOrderPrice;
+    private Long maxDiscountPrice;
     private Long storeId;
 
     private LocalDateTime deletedDate;
