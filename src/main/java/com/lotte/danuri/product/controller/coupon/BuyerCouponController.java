@@ -2,6 +2,7 @@ package com.lotte.danuri.product.controller.coupon;
 
 import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.request.CouponListDto;
+import com.lotte.danuri.product.model.dto.response.CouponByStoreDto;
 import com.lotte.danuri.product.service.coupon.CouponService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +28,11 @@ public class BuyerCouponController {
         return ResponseEntity.ok(couponList);
     }
 
+    @GetMapping(value = "/{couponId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "쿠폰 상세 조회", notes = "쿠폰ID에 의해 쿠폰 상세를 조회한다.")
+    public ResponseEntity getCouponDetail (@PathVariable("couponId") Long couponId){
+
+        CouponByStoreDto couponDto = couponService.getCouponDetail(couponId);
+        return ResponseEntity.ok(couponDto);
+    }
 }

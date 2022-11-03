@@ -231,4 +231,27 @@ public class CouponServiceImpl implements CouponService {
 
         return couponDtoList;
     }
+
+    @Override
+    public CouponByStoreDto getCouponDetail(Long couponId){
+        Optional<Coupon> coupon = couponRepository.findById(couponId);
+
+        // 예외처리
+        // 1. 쿠폰이 DB에 없는 경우
+        if(coupon.isEmpty()){
+            throw new CouponNotFoundException("Coupon not present in the database", ErrorCode.COUPON_NOT_FOUND);
+        }
+
+        // 2. 쿠폰이 삭제된 경우
+        if(coupon.get().getDeletedDate() != null){
+            throw new CouponWasDeletedException("Coupon was deleted in the database", ErrorCode.COUPON_WAS_DELETED);
+        }
+
+        List<ProductDto> productDtoList = new ArrayList<>();
+        coupon.get().getCouponProducts().forEach(v -> {
+            productDtoList.add(new ProductDto(v.getProduct()));
+        });
+        CouponByStoreDto couponDto = new CouponByStoreDto(coupon.get(),productDtoList);
+        return couponDto;
+    }
 }

@@ -22,4 +22,6 @@ public interface CouponService {
     List<CouponByStoreDto> getCouponsByStoreId(Long storeId);
 
     List<CouponDto> getCouponDetailList(CouponListDto couponListDto);
+
+    CouponByStoreDto getCouponDetail(Long couponId);
 }
