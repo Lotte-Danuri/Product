@@ -11,4 +11,6 @@ public interface CouponProductRepository extends JpaRepository<CouponProduct, Lo
     Optional<Iterable<CouponProduct>> findByCouponId(long id);
 
     Optional<Iterable<CouponProduct>> findByCouponIdAndDeletedDateIsNull(long id);
+
+    List<CouponProduct> findAllByProductIdAndCouponIdInAndDeletedDateIsNull(Long productId, List<Long> couponId);
 }

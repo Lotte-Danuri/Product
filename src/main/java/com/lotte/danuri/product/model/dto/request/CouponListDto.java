@@ -13,4 +13,5 @@ import java.util.List;
 @Builder
 public class CouponListDto {
     private List<Long> couponId;
+    private Long productId;
 }
