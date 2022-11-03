@@ -215,4 +215,20 @@ public class CouponServiceImpl implements CouponService {
 
         return result;
     }
+
+    @Override
+    public List<CouponDto> getCouponDetailList(CouponListDto couponListDto){
+        List<CouponDto> couponDtoList = new ArrayList<>();
+
+        List<CouponProduct> couponProductList = couponProductRepository.findAllByProductIdAndCouponIdInAndDeletedDateIsNull(
+                couponListDto.getProductId(),
+                couponListDto.getCouponId()
+        );
+
+        couponProductList.forEach(v ->
+                couponDtoList.add(new CouponDto(v.getCoupon()))
+        );
+
+        return couponDtoList;
+    }
 }
