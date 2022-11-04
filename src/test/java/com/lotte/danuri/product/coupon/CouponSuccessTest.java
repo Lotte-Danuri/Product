@@ -37,8 +37,6 @@ public class CouponSuccessTest {
     private static final LocalDateTime startDate = LocalDateTime.parse("2021-11-08T11:44:30");
     private static final LocalDateTime endDate = LocalDateTime.parse("2022-09-13T12:30:13");
     private static final Double discountRate = 15D;
-    private static final Double minOrderPrice = 5000D;
-    private static final Double maxDiscountPrice = 10000D;
 
     @Test
     @DisplayName("쿠폰 생성 테스트")
@@ -57,8 +55,6 @@ public class CouponSuccessTest {
                         .startDate(startDate)
                         .endDate(endDate)
                         .discountRate(discountRate)
-                        .minOrderPrice(minOrderPrice)
-                        .maxDiscountPrice(maxDiscountPrice)
                         .productId(productId)
                         .build()
         );
@@ -100,8 +96,6 @@ public class CouponSuccessTest {
                         .startDate(startDate)
                         .endDate(endDate)
                         .discountRate(discountRate)
-                        .minOrderPrice(minOrderPrice)
-                        .maxDiscountPrice(maxDiscountPrice)
                         .productId(productId)
                         .build()
         );

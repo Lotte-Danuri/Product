@@ -64,8 +64,6 @@ public class CouponServiceImpl implements CouponService {
                         .startDate(couponDto.getStartDate())
                         .endDate(couponDto.getEndDate())
                         .discountRate(couponDto.getDiscountRate())
-                        .minOrderPrice(couponDto.getMinOrderPrice())
-                        .maxDiscountPrice(couponDto.getMaxDiscountPrice())
                         .storeId(couponDto.getStoreId())
                         .build()
         );

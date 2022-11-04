@@ -24,9 +24,6 @@ public class CouponDto {
     private LocalDateTime endDate;
 
     private Double discountRate;
-    private Long minOrderPrice;
-    private Long maxDiscountPrice;
-
     private List<Long> productId;
 
     public CouponDto(Coupon coupon, List<Long> productId) {
@@ -37,8 +34,6 @@ public class CouponDto {
         this.startDate = coupon.getStartDate();
         this.endDate = coupon.getEndDate();
         this.discountRate = coupon.getDiscountRate();
-        this.minOrderPrice = coupon.getMinOrderPrice();
-        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
         this.productId = productId;
     }
 
@@ -50,8 +45,6 @@ public class CouponDto {
         this.startDate = coupon.getStartDate();
         this.endDate = coupon.getEndDate();
         this.discountRate = coupon.getDiscountRate();
-        this.minOrderPrice = coupon.getMinOrderPrice();
-        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
     }
 
     public void updateProductId(List<Long> couponProductId) {
