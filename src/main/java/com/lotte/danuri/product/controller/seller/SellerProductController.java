@@ -2,6 +2,7 @@ package com.lotte.danuri.product.controller.seller;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.CategoryDto;
+import com.lotte.danuri.product.model.dto.request.ProductChanceDto;
 import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.service.seller.SellerProductService;
@@ -69,5 +70,12 @@ public class SellerProductController {
 
         List<ProductDto> productDtoList = sellerProductService.getProductsByCategory(categoryDto);
         return ResponseEntity.ok(productDtoList);
+    }
+
+    @PostMapping(value = "/chance", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "매출 기회 상위 상품 조회", notes = "주문이 5이하인 상품 뽑아서 전환율로 오름차순해 상위 8개 품목을 뽑는다.")
+    public ResponseEntity<?> getProductChance(@RequestBody ProductChanceDto productChanceDto){
+        List<SellerProductResponseDto> sellerProductResponseDto= sellerProductService.getProductChance(productChanceDto);
+        return ResponseEntity.ok(sellerProductResponseDto);
     }
 }
