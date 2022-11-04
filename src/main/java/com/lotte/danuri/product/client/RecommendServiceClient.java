@@ -11,4 +11,7 @@ import java.util.List;
 public interface RecommendServiceClient {
     @PostMapping("/recommends/click/count")
     List<Long> getClickCount(@RequestBody ProductListDto productListDto);
+
+    @PostMapping("/recommends//click/date/count")
+    List<Long> getClickCountByDate(@RequestBody ProductListDto productListDto);
 }
