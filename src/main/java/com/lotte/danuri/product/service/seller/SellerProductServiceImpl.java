@@ -9,6 +9,7 @@ import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.CategoryDto;
+import com.lotte.danuri.product.model.dto.request.ProductChanceDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.*;
@@ -24,8 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -204,12 +207,12 @@ public class SellerProductServiceImpl implements SellerProductService {
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
 
         log.info("Before Call [getClickCount] Method IN [Product-Service]");
-        List<Long> productClickCounts = circuitBreaker.run(() -> recommendServiceClient.getClickCount(productListDto),
+        List<Long> productClickCounts = circuitBreaker.run(() -> recommendServiceClient.getClickCountByDate(productListDto),
                 throwable -> new ArrayList<>());
         log.info("After Call [getClickCount] Method IN [Product-Service]");
 
         log.info("Before Call [getOrdersCount] Method IN [Product-Service]");
-        List<Long> productOrderCounts = circuitBreaker.run(() -> orderServiceClient.getOrdersCount(productListDto),
+        List<Long> productOrderCounts = circuitBreaker.run(() -> orderServiceClient.getOrdersCountByDate(productListDto),
                 throwable -> new ArrayList<>());
         log.info("After Call [getOrdersCount] Method IN [Product-Service]");
 
@@ -292,5 +295,48 @@ public class SellerProductServiceImpl implements SellerProductService {
         });
 
         return productDtoList;
+    }
+
+    @Override
+    public List<SellerProductResponseDto> getProductChance(ProductChanceDto productChanceDto){
+        List<SellerProductResponseDto> sellerProductResponseDtos = new ArrayList<>();
+
+        List<Product> products = productRepository.findAllByDeletedDateIsNullAndStoreId(productChanceDto.getStoreId());
+        ProductListDto productListDto = ProductListDto.builder()
+                        .productId(products.stream()
+                            .map(product -> product.getId())
+                            .toList())
+                        .startDate(productChanceDto.getStartDate())
+                        .endDate(productChanceDto.getEndDate())
+                        .build();
+
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+
+        log.info("Before Call [getClickCountByDate] Method IN [Product-Service]");
+        List<Long> productClickCounts = circuitBreaker.run(() -> recommendServiceClient.getClickCountByDate(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getClickCountByDate] Method IN [Product-Service]");
+
+        log.info("Before Call [getOrdersCountByDate] Method IN [Product-Service]");
+        List<Long> productOrderCounts = circuitBreaker.run(() -> orderServiceClient.getOrdersCountByDate(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getOrdersCountByDate] Method IN [Product-Service]");
+
+        for(int i=0; i<products.size(); i++){
+            sellerProductResponseDtos.add(new SellerProductResponseDto(
+                            products.get(i),
+                            productClickCounts.get(i),
+                            productOrderCounts.get(i),
+                            productOrderCounts.get(i)==0?0:productOrderCounts.get(i).doubleValue()/productClickCounts.get(i).doubleValue()*100
+                    )
+            );
+        }
+
+        List<SellerProductResponseDto> result = sellerProductResponseDtos
+                                    .stream()
+                                    .sorted(Comparator.comparingDouble(SellerProductResponseDto::getConversionRate))
+                                    .filter(v -> v.getOrderCount() <= 5)
+                                    .collect(Collectors.toList());
+        return result;
     }
 }

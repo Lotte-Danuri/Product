@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.service.seller;
 
 import com.lotte.danuri.product.model.dto.request.CategoryDto;
+import com.lotte.danuri.product.model.dto.request.ProductChanceDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.entity.Product;
@@ -23,4 +24,6 @@ public interface SellerProductService {
     List<SellerProductResponseDto> getProductsByStoreId(Long storeId);
 
     List<ProductDto> getProductsByCategory(CategoryDto categoryDto);
+
+    List<SellerProductResponseDto> getProductChance(ProductChanceDto productChanceDto);
 }

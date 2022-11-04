@@ -11,4 +11,7 @@ import java.util.List;
 public interface OrderServiceClient {
     @PostMapping("/orders/pays/list/count")
     List<Long> getOrdersCount (@RequestBody ProductListDto productListDto);
+
+    @PostMapping("/orders/pays/list/date/count")
+    List<Long> getOrdersCountByDate(@RequestBody ProductListDto productListDto);
 }
