@@ -30,9 +30,9 @@ public class BuyerCouponController {
 
     @GetMapping(value = "/{couponId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation(value = "쿠폰 상세 조회", notes = "쿠폰ID에 의해 쿠폰 상세를 조회한다.")
-    public ResponseEntity getCouponDetail (@PathVariable("couponId") Long couponId){
+    public ResponseEntity getCouponDetail (@RequestHeader String memberId, @PathVariable("couponId") Long couponId){
 
-        CouponByStoreDto couponDto = couponService.getCouponDetail(couponId);
+        CouponByStoreDto couponDto = couponService.getCouponDetail(Long.parseLong(memberId),couponId);
         return ResponseEntity.ok(couponDto);
     }
 }

@@ -1,8 +1,8 @@
 package com.lotte.danuri.product.client;
 
+import com.lotte.danuri.product.model.dto.request.MyCouponReqDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,4 +14,7 @@ public interface MemberServiceClient {
 
     @GetMapping("/store/{brandId}")
     List<Long> getStoreId(@PathVariable Long brandId);
+
+    @PostMapping("/mycoupon/check")
+    boolean check(@RequestBody MyCouponReqDto dto);
 }
