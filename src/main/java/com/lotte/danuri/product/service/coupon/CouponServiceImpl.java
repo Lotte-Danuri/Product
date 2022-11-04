@@ -1,5 +1,6 @@
 package com.lotte.danuri.product.service.coupon;
 
+import com.lotte.danuri.product.client.MemberServiceClient;
 import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.CouponNotFoundException;
 import com.lotte.danuri.product.exception.CouponWasDeletedException;
@@ -9,6 +10,7 @@ import com.lotte.danuri.product.model.dto.CouponDto;
 import com.lotte.danuri.product.model.dto.CouponProductDto;
 import com.lotte.danuri.product.model.dto.ProductDto;
 import com.lotte.danuri.product.model.dto.request.CouponListDto;
+import com.lotte.danuri.product.model.dto.request.MyCouponReqDto;
 import com.lotte.danuri.product.model.dto.response.CouponByStoreDto;
 import com.lotte.danuri.product.model.entity.Coupon;
 import com.lotte.danuri.product.model.entity.CouponProduct;
@@ -38,7 +40,7 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository couponRepository;
     private final CouponProductRepository couponProductRepository;
     private final KafkaProducerService kafkaProducerService;
-
+    private final MemberServiceClient memberServiceClient;
     @Override
     public void createCoupon(CouponDto couponDto) {
         //스토어 ID 예외처리 추가해야 함.
@@ -231,7 +233,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponByStoreDto getCouponDetail(Long couponId){
+    public CouponByStoreDto getCouponDetail(Long memberId, Long couponId){
         Optional<Coupon> coupon = couponRepository.findById(couponId);
 
         // 예외처리
@@ -249,7 +251,12 @@ public class CouponServiceImpl implements CouponService {
         coupon.get().getCouponProducts().forEach(v -> {
             productDtoList.add(new ProductDto(v.getProduct()));
         });
-        CouponByStoreDto couponDto = new CouponByStoreDto(coupon.get(),productDtoList);
+        CouponByStoreDto couponDto = new CouponByStoreDto(
+                coupon.get(),
+                productDtoList,
+                memberServiceClient.check(MyCouponReqDto.builder().id(couponId).memberId(memberId).build())
+        );
+
         return couponDto;
     }
 }

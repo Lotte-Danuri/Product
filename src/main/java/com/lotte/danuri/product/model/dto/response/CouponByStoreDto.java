@@ -28,8 +28,20 @@ public class CouponByStoreDto {
     private LocalDateTime endDate;
 
     private Double discountRate;
-
+    private boolean status;
     private List<ProductDto> productDtoList;
+
+    public CouponByStoreDto(Coupon coupon, List<ProductDto> productDtoList, boolean status) {
+        this.id = coupon.getId();
+        this.storeId = coupon.getStoreId();
+        this.name = coupon.getName();
+        this.contents = coupon.getContents();
+        this.startDate = coupon.getStartDate();
+        this.endDate = coupon.getEndDate();
+        this.discountRate = coupon.getDiscountRate();
+        this.status = status;
+        this.productDtoList = productDtoList;
+    }
 
     public CouponByStoreDto(Coupon coupon, List<ProductDto> productDtoList) {
         this.id = coupon.getId();
