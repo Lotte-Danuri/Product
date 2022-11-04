@@ -25,8 +25,6 @@ public class Coupon extends BaseEntity{
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDate;
     private Double discountRate;
-    private Long minOrderPrice;
-    private Long maxDiscountPrice;
     private Long storeId;
 
     private LocalDateTime deletedDate;
@@ -45,8 +43,6 @@ public class Coupon extends BaseEntity{
         this.startDate = couponDto.getStartDate();
         this.endDate = couponDto.getEndDate();
         this.discountRate = couponDto.getDiscountRate();
-        this.minOrderPrice = couponDto.getMinOrderPrice();
-        this.maxDiscountPrice = couponDto.getMaxDiscountPrice();
         this.storeId = couponDto.getStoreId();
     }
 }

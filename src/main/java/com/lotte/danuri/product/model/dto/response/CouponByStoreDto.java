@@ -28,8 +28,6 @@ public class CouponByStoreDto {
     private LocalDateTime endDate;
 
     private Double discountRate;
-    private Long minOrderPrice;
-    private Long maxDiscountPrice;
 
     private List<ProductDto> productDtoList;
 
@@ -41,8 +39,6 @@ public class CouponByStoreDto {
         this.startDate = coupon.getStartDate();
         this.endDate = coupon.getEndDate();
         this.discountRate = coupon.getDiscountRate();
-        this.minOrderPrice = coupon.getMinOrderPrice();
-        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
         this.productDtoList = productDtoList;
     }
 
@@ -54,7 +50,5 @@ public class CouponByStoreDto {
         this.startDate = coupon.getStartDate();
         this.endDate = coupon.getEndDate();
         this.discountRate = coupon.getDiscountRate();
-        this.minOrderPrice = coupon.getMinOrderPrice();
-        this.maxDiscountPrice = coupon.getMaxDiscountPrice();
     }
 }
