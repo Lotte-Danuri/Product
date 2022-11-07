@@ -16,4 +16,5 @@ public class CategoryDto {
     private Long categoryFirstId;
     private Long categorySecondId;
     private Long categoryThirdId;
+    private String productName;
 }
