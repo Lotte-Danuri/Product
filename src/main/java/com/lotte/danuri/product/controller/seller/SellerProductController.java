@@ -48,7 +48,7 @@ public class SellerProductController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ApiOperation(value = "상품 수정", notes = "하나의 상품을 수정한다.")
     public ResponseEntity updateProduct (@RequestPart ProductDto productDto, @RequestPart List<MultipartFile> imageList){
 
