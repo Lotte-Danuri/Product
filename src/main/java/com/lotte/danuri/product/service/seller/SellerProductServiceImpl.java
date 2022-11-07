@@ -229,7 +229,7 @@ public class SellerProductServiceImpl implements SellerProductService {
     }
 
     @Override
-    public List<ProductDto> getProductsByCategory(CategoryDto categoryDto){
+    public List<SellerProductResponseDto> getProductsByCategory(CategoryDto categoryDto){
 
         if (categoryDto.getCategoryFirstId() != null) {
             Optional<CategoryFirst> categoryFirst = categoryFirstRepository.findById(categoryDto.getCategoryFirstId());
@@ -288,13 +288,13 @@ public class SellerProductServiceImpl implements SellerProductService {
             );
         }
 
-        List<ProductDto> productDtoList = new ArrayList<>();
+        List<SellerProductResponseDto> sellerProductResponseDtoList = new ArrayList<>();
 
         productList.forEach(v -> {
-            productDtoList.add(new ProductDto(v));
+            sellerProductResponseDtoList.add(new SellerProductResponseDto(v));
         });
 
-        return productDtoList;
+        return sellerProductResponseDtoList;
     }
 
     @Override
