@@ -263,29 +263,59 @@ public class SellerProductServiceImpl implements SellerProductService {
 
         List<Product> productList = new ArrayList<>();
 
-
         if (categoryDto.getCategoryFirstId() == null) {
-            productList = productRepository.findAllByStoreIdAndDeletedDateIsNull(
-                    categoryDto.getStordId()
-            );
+            if (categoryDto.getProductName() == null) {
+                productList = productRepository.findAllByStoreIdAndDeletedDateIsNull(
+                        categoryDto.getStordId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdAndProductNameContainingAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getProductName()
+                );
+            }
         }
         else if (categoryDto.getCategorySecondId() == null) {
-            productList = productRepository.findAllByStoreIdAndCategoryFirstIdAndDeletedDateIsNull(
-                    categoryDto.getStordId(),
-                    categoryDto.getCategoryFirstId()
-            );
+            if (categoryDto.getProductName() == null) {
+                productList = productRepository.findAllByStoreIdAndCategoryFirstIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getCategoryFirstId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdAndProductNameContainingAndCategoryFirstIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getProductName(),
+                        categoryDto.getCategoryFirstId()
+                );
+            }
         }
         else if (categoryDto.getCategoryThirdId() == null) {
-            productList = productRepository.findAllByStoreIdAndCategorySecondIdAndDeletedDateIsNull(
-                    categoryDto.getStordId(),
-                    categoryDto.getCategorySecondId()
-            );
+            if (categoryDto.getProductName() == null) {
+                productList = productRepository.findAllByStoreIdAndCategorySecondIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getCategorySecondId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdAndProductNameContainingAndCategorySecondIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getProductName(),
+                        categoryDto.getCategorySecondId()
+                );
+            }
         }
         else{
-            productList = productRepository.findAllByStoreIdAndCategoryThirdIdAndDeletedDateIsNull(
-                    categoryDto.getStordId(),
-                    categoryDto.getCategoryThirdId()
-            );
+            if (categoryDto.getProductName() == null) {
+                productList = productRepository.findAllByStoreIdAndCategoryThirdIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getCategoryThirdId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdAndProductNameContainingAndCategoryThirdIdAndDeletedDateIsNull(
+                        categoryDto.getStordId(),
+                        categoryDto.getProductName(),
+                        categoryDto.getCategoryThirdId()
+                );
+            }
         }
 
         List<SellerProductResponseDto> sellerProductResponseDtoList = new ArrayList<>();
