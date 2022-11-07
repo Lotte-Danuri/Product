@@ -23,7 +23,7 @@ public interface SellerProductService {
 
     List<SellerProductResponseDto> getProductsByStoreId(Long storeId);
 
-    List<ProductDto> getProductsByCategory(CategoryDto categoryDto);
+    List<SellerProductResponseDto> getProductsByCategory(CategoryDto categoryDto);
 
     List<SellerProductResponseDto> getProductChance(ProductChanceDto productChanceDto);
 }

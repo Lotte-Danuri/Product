@@ -25,6 +25,10 @@ public class SellerProductResponseDto {
     private String categoryFirstName;
     private String categorySecondName;
     private String categoryThirdName;
+
+    private Long categoryFirstId;
+    private Long categorySecondId;
+    private Long categoryThirdId;
     private Long clickCount;
     private Long orderCount;
     private Double conversionRate;
@@ -46,5 +50,23 @@ public class SellerProductResponseDto {
         this.clickCount = clickCount;
         this.orderCount = orderCount;
         this.conversionRate = conversionRate;
+    }
+
+    public SellerProductResponseDto(Product product) {
+        this.id = product.getId();
+        this.productName = product.getProductName();
+        this.thumbnailUrl = product.getThumbnailUrl();
+        this.price = product.getPrice();
+        this.stock = product.getStock();
+        this.storeId = product.getStoreId();
+        this.likeCount = product.getLikeCount();
+        this.productCode = product.getProductCode();
+        this.warranty = product.getWarranty();
+        this.categoryFirstName = product.getCategoryFirst().getCategoryName();
+        this.categorySecondName = product.getCategorySecond().getCategoryName();
+        this.categoryThirdName = product.getCategoryThird().getCategoryName();
+        this.categoryFirstId = product.getCategoryFirst().getId();
+        this.categorySecondId = product.getCategorySecond().getId();
+        this.categoryThirdId = product.getCategoryThird().getId();
     }
 }
