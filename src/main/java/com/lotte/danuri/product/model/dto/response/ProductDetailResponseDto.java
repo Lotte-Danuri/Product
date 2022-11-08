@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.Store;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,20 +26,21 @@ public class ProductDetailResponseDto {
     private Long likeCount;
     private String productCode;
     private Long warranty;
-
+    private String brandName;
     private String categoryFirstName;
     private String categorySecondName;
     private String categoryThirdName;
 
     private List<String> imageList;
-    public ProductDetailResponseDto(Product product, List<String> imageList, String storeName) {
+    public ProductDetailResponseDto(Product product, List<String> imageList, StoreInfoRespDto storeInfoRespDto) {
         this.id = product.getId();
         this.productName = product.getProductName();
         this.thumbnailUrl = product.getThumbnailUrl();
         this.price = product.getPrice();
         this.stock = product.getStock();
         this.storeId = product.getStoreId();
-        this.storeName = storeName;
+        this.storeName = storeInfoRespDto.getStoreName();
+        this.brandName = storeInfoRespDto.getBrandName();
         this.likeCount = product.getLikeCount();
         this.productCode = product.getProductCode();
         this.warranty = product.getWarranty();
