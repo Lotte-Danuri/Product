@@ -9,6 +9,7 @@ import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
+import com.lotte.danuri.product.model.dto.response.StoreInfoRespDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -70,10 +71,10 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         });
         log.info("Before Call [getNames] Method IN [Product-Service]");
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
-        String storeName = circuitBreaker.run(() -> memberServiceClient.getNames(product.get().getStoreId()),
-                throwable -> "");
+        StoreInfoRespDto storeInfoRespDto = circuitBreaker.run(() -> memberServiceClient.getNames(product.get().getStoreId()),
+                throwable -> new StoreInfoRespDto());
         log.info("After Call [getNames] Method IN [Product-Service]");
-        ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList, storeName);
+        ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(product.get(),imageList, storeInfoRespDto);
         log.info("After Retrieve [getProduct] Method IN [Product-Service]");
         return productDetailResponseDto;
     }
@@ -142,10 +143,10 @@ public class BuyerProductServiceImpl implements BuyerProductService{
 
             log.info("Before Call [getNames] Method IN [Product-Service]");
             CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
-            String storeName = circuitBreaker.run(() -> memberServiceClient.getNames(v.getStoreId()),
-                    throwable -> "");
+            StoreInfoRespDto storeInfoRespDto = circuitBreaker.run(() -> memberServiceClient.getNames(v.getStoreId()),
+                    throwable -> new StoreInfoRespDto());
             log.info("After Call [getNames] Method IN [Product-Service]");
-            ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(v,imageList, storeName);
+            ProductDetailResponseDto productDetailResponseDto = new ProductDetailResponseDto(v,imageList, storeInfoRespDto);
             result.add(productDetailResponseDto);
         });
 
