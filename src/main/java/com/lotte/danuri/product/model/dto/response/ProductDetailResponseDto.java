@@ -27,6 +27,7 @@ public class ProductDetailResponseDto {
     private String productCode;
     private Long warranty;
     private String brandName;
+    private Long brandId;
     private String categoryFirstName;
     private String categorySecondName;
     private String categoryThirdName;
@@ -41,6 +42,7 @@ public class ProductDetailResponseDto {
         this.storeId = product.getStoreId();
         this.storeName = storeInfoRespDto.getStoreName();
         this.brandName = storeInfoRespDto.getBrandName();
+        this.brandId = storeInfoRespDto.getBrandId();
         this.likeCount = product.getLikeCount();
         this.productCode = product.getProductCode();
         this.warranty = product.getWarranty();
