@@ -6,6 +6,7 @@ import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
+import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.service.buyer.BuyerProductService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -74,5 +75,12 @@ public class BuyerProductController {
     public ResponseEntity<?> getProductListByBrand(@RequestBody BrandCategoryDto brandCategoryDto){
         List<ProductDto> productList = buyerProductService.getProductListByBrand(brandCategoryDto);
         return ResponseEntity.ok(productList);
+    }
+
+    @GetMapping(value = "/best/list", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "베스트 상품 조회", notes = "주문 전환율이 높은 상품을 조회한다.")
+    public ResponseEntity<?> getBestProductList(){
+        List<SellerProductResponseDto> sellerProductResponseDtoList = buyerProductService.getBestProductList();
+        return ResponseEntity.ok(sellerProductResponseDtoList);
     }
 }

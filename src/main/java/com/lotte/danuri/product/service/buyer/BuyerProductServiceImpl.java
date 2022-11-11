@@ -1,6 +1,8 @@
 package com.lotte.danuri.product.service.buyer;
 
 import com.lotte.danuri.product.client.MemberServiceClient;
+import com.lotte.danuri.product.client.OrderServiceClient;
+import com.lotte.danuri.product.client.RecommendServiceClient;
 import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
@@ -10,19 +12,26 @@ import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
+import com.lotte.danuri.product.model.dto.response.SellerProductResponseDto;
 import com.lotte.danuri.product.model.dto.response.StoreInfoRespDto;
 import com.lotte.danuri.product.model.dto.response.StoreRespDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.lotte.danuri.product.util.DeDuplication.deduplication;
 
@@ -34,7 +43,8 @@ public class BuyerProductServiceImpl implements BuyerProductService{
     private final ProductRepository productRepository;
     private final MemberServiceClient memberServiceClient;
     private final CircuitBreakerFactory circuitBreakerFactory;
-
+    private final RecommendServiceClient recommendServiceClient;
+    private final OrderServiceClient orderServiceClient;
     @Override
     public List<ProductDto> getProducts(){
         log.info("Before Retrieve [getProducts] Method IN [Product-Service]");
@@ -251,6 +261,69 @@ public class BuyerProductServiceImpl implements BuyerProductService{
             result = productDtoList;
         }
 
+        return result;
+    }
+
+    @Override
+    public List<SellerProductResponseDto> getBestProductList(){
+        List<SellerProductResponseDto> sellerProductResponseDtos = new ArrayList<>();
+        List<ProductDto> productDtoList = new ArrayList<>();
+        List<ProductDto> productDtos = new ArrayList<>();
+        List<Product> products = productRepository.findAllByDeletedDateIsNull();
+        products.forEach(v -> {
+            productDtoList.add(new ProductDto(v));
+        });
+
+        //중복제거 된 product list
+        productDtos = deduplication(productDtoList, ProductDto::getProductCode);
+
+        ProductListDto productListDto = ProductListDto.builder()
+                .productId(productDtos.stream()
+                        .map(product -> product.getId())
+                        .toList())
+                .startDate(LocalDateTime.now().minusDays(7))
+                .endDate(LocalDateTime.now())
+                .build();
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+
+        log.info("Before Call [getClickCountByDate] Method IN [Product-Service]");
+        List<Long> productClickCounts = circuitBreaker.run(() -> recommendServiceClient.getClickCountByDate(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getClickCountByDate] Method IN [Product-Service]");
+
+        log.info("Before Call [getOrdersCountByDate] Method IN [Product-Service]");
+        List<Long> productOrderCounts = circuitBreaker.run(() -> orderServiceClient.getOrdersCountByDate(productListDto),
+                throwable -> new ArrayList<>());
+        log.info("After Call [getOrdersCountByDate] Method IN [Product-Service]");
+
+        for(int i=0; i<productDtos.size(); i++){
+            sellerProductResponseDtos.add(new SellerProductResponseDto(
+                            productDtos.get(i),
+                            productClickCounts.get(i),
+                            productOrderCounts.get(i),
+                            productOrderCounts.get(i)==0?0:productOrderCounts.get(i).doubleValue()/productClickCounts.get(i).doubleValue()*100
+                    )
+            );
+        }
+
+        List<SellerProductResponseDto> clickRankInHalf = sellerProductResponseDtos
+                        .stream()
+                        .sorted(Comparator.comparingDouble(SellerProductResponseDto::getClickCount).reversed())
+                        .limit(50)
+                        .collect(Collectors.toList());
+
+        List<SellerProductResponseDto> orderRankInHalf = sellerProductResponseDtos
+                        .stream()
+                        .sorted(Comparator.comparingDouble(SellerProductResponseDto::getOrderCount).reversed())
+                        .limit(50)
+                        .collect(Collectors.toList());
+
+        List<SellerProductResponseDto> result = new ArrayList<>();
+
+        result = clickRankInHalf.stream()
+                        .filter(sellerProductResponseDto  -> orderRankInHalf.stream().anyMatch(Predicate.isEqual(sellerProductResponseDto)))
+                        .sorted(Comparator.comparingDouble(SellerProductResponseDto::getConversionRate).reversed())
+                        .collect(Collectors.toList());
         return result;
     }
 }
