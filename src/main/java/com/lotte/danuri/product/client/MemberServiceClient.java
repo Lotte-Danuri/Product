@@ -2,6 +2,7 @@ package com.lotte.danuri.product.client;
 
 import com.lotte.danuri.product.model.dto.request.MyCouponReqDto;
 import com.lotte.danuri.product.model.dto.response.StoreInfoRespDto;
+import com.lotte.danuri.product.model.dto.response.StoreRespDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,4 +19,7 @@ public interface MemberServiceClient {
 
     @PostMapping("/mycoupon/check")
     boolean check(@RequestBody MyCouponReqDto dto);
+
+    @GetMapping("/store/stores/{brandId}")
+    List<StoreRespDto> getStore(@PathVariable Long brandId);
 }

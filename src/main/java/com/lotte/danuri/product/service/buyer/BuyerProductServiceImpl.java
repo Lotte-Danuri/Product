@@ -5,11 +5,13 @@ import com.lotte.danuri.product.error.ErrorCode;
 import com.lotte.danuri.product.exception.ProductNotFoundException;
 import com.lotte.danuri.product.exception.ProductWasDeletedException;
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.BrandCategoryDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
 import com.lotte.danuri.product.model.dto.response.ProductDetailResponseDto;
 import com.lotte.danuri.product.model.dto.response.StoreInfoRespDto;
+import com.lotte.danuri.product.model.dto.response.StoreRespDto;
 import com.lotte.danuri.product.model.entity.Product;
 import com.lotte.danuri.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -165,6 +167,90 @@ public class BuyerProductServiceImpl implements BuyerProductService{
             ProductDto productDto = new ProductDto(v);
             result.add(productDto);
         });
+        return result;
+    }
+
+    @Override
+    public List<ProductDto> getProductListByBrand(BrandCategoryDto brandCategoryDto){
+        List<ProductDto> result = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
+        if (brandCategoryDto.getStoreId() == null) {
+            log.info("Before Call [getProductListByBrand] Method IN [Product-Service]");
+            CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+            List<StoreRespDto> storeRespDtoList = circuitBreaker.run(() -> memberServiceClient.getStore(brandCategoryDto.getBrandId()),
+                    throwable -> new ArrayList<>());
+            storeRespDtoList.forEach(v -> {
+                System.out.println(v.getStoreId());
+            });
+            log.info("After Call [getProductListByBrand] Method IN [Product-Service]");
+
+            if (brandCategoryDto.getCategoryFirstId() != null ) {
+                productList = productRepository.findAllByStoreIdInAndCategoryFirstIdAndDeletedDateIsNull(
+                        storeRespDtoList.stream()
+                                .map(storeRespDto -> storeRespDto.getStoreId())
+                                .toList(),
+                        brandCategoryDto.getCategoryFirstId()
+                );
+            } else if (brandCategoryDto.getCategorySecondId() != null) {
+                productList = productRepository.findAllByStoreIdInAndCategorySecondIdAndDeletedDateIsNull(
+                        storeRespDtoList.stream()
+                                .map(storeRespDto -> storeRespDto.getStoreId())
+                                .toList(),
+                        brandCategoryDto.getCategorySecondId()
+                );
+
+            } else if (brandCategoryDto.getCategoryThirdId() != null) {
+                productList = productRepository.findAllByStoreIdInAndCategoryThirdIdAndDeletedDateIsNull(
+                        storeRespDtoList.stream()
+                                .map(storeRespDto -> storeRespDto.getStoreId())
+                                .toList(),
+                        brandCategoryDto.getCategoryThirdId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdInAndDeletedDateIsNull(
+                        storeRespDtoList.stream()
+                                .map(storeRespDto -> storeRespDto.getStoreId())
+                                .toList());
+            }
+
+            List<ProductDto> productDtoList = new ArrayList<>();
+            productList.forEach(v -> {
+                productDtoList.add(new ProductDto(v));
+            });
+
+            result = deduplication(productDtoList, ProductDto::getProductCode);
+        }
+        else {
+            if (brandCategoryDto.getCategoryFirstId() != null ) {
+                productList = productRepository.findAllByStoreIdAndCategoryFirstIdAndDeletedDateIsNull(
+                        brandCategoryDto.getStoreId(),
+                        brandCategoryDto.getCategoryFirstId()
+                );
+            } else if (brandCategoryDto.getCategorySecondId() != null) {
+                productList = productRepository.findAllByStoreIdAndCategorySecondIdAndDeletedDateIsNull(
+                        brandCategoryDto.getStoreId(),
+                        brandCategoryDto.getCategorySecondId()
+                );
+
+            } else if (brandCategoryDto.getCategoryThirdId() != null) {
+                productList = productRepository.findAllByStoreIdAndCategoryThirdIdAndDeletedDateIsNull(
+                        brandCategoryDto.getStoreId(),
+                        brandCategoryDto.getCategoryThirdId()
+                );
+            } else {
+                productList = productRepository.findAllByStoreIdAndDeletedDateIsNull(
+                        brandCategoryDto.getStoreId()
+                );
+            }
+
+            List<ProductDto> productDtoList = new ArrayList<>();
+            productList.forEach(v -> {
+                productDtoList.add(new ProductDto(v));
+            });
+
+            result = productDtoList;
+        }
+
         return result;
     }
 }
