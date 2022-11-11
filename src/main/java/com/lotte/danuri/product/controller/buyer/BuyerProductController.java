@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.controller.buyer;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.BrandCategoryDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
@@ -66,5 +67,12 @@ public class BuyerProductController {
 
         List<ProductDetailResponseDto> ProductDetailResponseDto = buyerProductService.getProductListByProductCode(productCode);
         return ResponseEntity.ok(ProductDetailResponseDto);
+    }
+
+    @PostMapping(value = "/brand", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ApiOperation(value = "브랜드 페이지 상품 조회", notes = "해당 브랜드의 상품들을 조건에 의해 조회한다.")
+    public ResponseEntity<?> getProductListByBrand(@RequestBody BrandCategoryDto brandCategoryDto){
+        List<ProductDto> productList = buyerProductService.getProductListByBrand(brandCategoryDto);
+        return ResponseEntity.ok(productList);
     }
 }

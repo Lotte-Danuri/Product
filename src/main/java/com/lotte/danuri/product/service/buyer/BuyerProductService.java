@@ -1,6 +1,7 @@
 package com.lotte.danuri.product.service.buyer;
 
 import com.lotte.danuri.product.model.dto.ProductDto;
+import com.lotte.danuri.product.model.dto.request.BrandCategoryDto;
 import com.lotte.danuri.product.model.dto.request.ProductByConditionDto;
 import com.lotte.danuri.product.model.dto.request.ProductListByCodeDto;
 import com.lotte.danuri.product.model.dto.request.ProductListDto;
@@ -21,4 +22,6 @@ public interface BuyerProductService {
     List<ProductDetailResponseDto> getProductListByProductCode(String productCode);
 
     List<ProductDto> getProductListById(ProductListDto productListDto);
+
+    List<ProductDto> getProductListByBrand(BrandCategoryDto brandCategoryDto);
 }
