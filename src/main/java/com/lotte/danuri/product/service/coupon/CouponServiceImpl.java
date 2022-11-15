@@ -42,7 +42,7 @@ public class CouponServiceImpl implements CouponService {
     private final KafkaProducerService kafkaProducerService;
     private final MemberServiceClient memberServiceClient;
     @Override
-    public void createCoupon(CouponDto couponDto) {
+    public Long createCoupon(CouponDto couponDto) {
         //스토어 ID 예외처리 추가해야 함.
 
         // 예외처리
@@ -70,12 +70,6 @@ public class CouponServiceImpl implements CouponService {
                         .build()
         );
 
-        kafkaProducerService.send("coupon-insert", CouponDto.builder()
-                .id(coupon.getId())
-                .storeId(coupon.getStoreId())
-                .build()
-        );
-
         // 쿠폰에 적용된 상품 INSERT
         List<CouponProduct> couponProductList = new ArrayList<CouponProduct>();
         couponDto.getProductId().forEach(v -> {
@@ -86,6 +80,8 @@ public class CouponServiceImpl implements CouponService {
             couponProductList.add(couponProduct);
         });
         couponProductRepository.saveAll(couponProductList);
+
+        return coupon.getId();
     }
 
     @Override
@@ -200,7 +196,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public List<CouponByStoreDto> getCouponsByStoreId(Long storeId){
-        List<Coupon> coupons = couponRepository.findAllByStoreId(storeId);
+        List<Coupon> coupons = couponRepository.findAllByStoreIdAndNameNotContaining(storeId,"특별할인");
         List<CouponByStoreDto> result = new ArrayList<>();
 
         coupons.forEach(v -> {

@@ -9,7 +9,7 @@ import org.apache.catalina.LifecycleState;
 import java.util.List;
 
 public interface CouponService {
-    void createCoupon(CouponDto couponDto);
+    Long createCoupon(CouponDto couponDto);
 
     List<CouponDto> getCoupons();
 

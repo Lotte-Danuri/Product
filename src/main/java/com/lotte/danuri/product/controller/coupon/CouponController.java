@@ -28,7 +28,7 @@ public class CouponController {
     @ApiOperation(value = "쿠폰 등록", notes = "쿠폰을 생성한다.")
     public ResponseEntity createCoupon (@RequestBody CouponDto couponDto){
 
-        couponService.createCoupon(couponDto);
+        Long couponId = couponService.createCoupon(couponDto);
         return ResponseEntity.ok().build();
     }
 
