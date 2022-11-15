@@ -29,7 +29,7 @@ public class CouponController {
     public ResponseEntity createCoupon (@RequestBody CouponDto couponDto){
 
         Long couponId = couponService.createCoupon(couponDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(couponId);
     }
 
     @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE})
