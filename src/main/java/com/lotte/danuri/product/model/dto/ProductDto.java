@@ -27,6 +27,7 @@ public class ProductDto {
     private Long likeCount;
     private String productCode;
     private Long warranty;
+    private String brandName;
 
     private Long categoryFirstId;
     private Long categorySecondId;
@@ -53,5 +54,9 @@ public class ProductDto {
         this.categoryThirdId = product.getCategoryThird().getId();
         this.createdDate = product.getCreatedDate();
         this.updatedDate = product.getUpdatedDate();
+    }
+
+    public void updateBrandName(String brandName) {
+        this.brandName = brandName;
     }
 }

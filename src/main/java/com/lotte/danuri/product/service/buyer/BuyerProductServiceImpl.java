@@ -50,13 +50,16 @@ public class BuyerProductServiceImpl implements BuyerProductService{
         log.info("Before Retrieve [getProducts] Method IN [Product-Service]");
         List<Product> products = productRepository.findAllByDeletedDateIsNull();
         List<ProductDto> ProductDtoList = new ArrayList<>();
-
         products.forEach(v -> {
             ProductDto productDto = new ProductDto(v);
             ProductDtoList.add(productDto);
         });
 
         List<ProductDto> result = deduplication(ProductDtoList, ProductDto::getProductCode);
+        result.forEach(v -> {
+            StoreInfoRespDto storeInfoRespDto = memberServiceClient.getNames(v.getStoreId());
+            v.updateBrandName(storeInfoRespDto.getBrandName());
+        });
         log.info("After Retrieve [getProducts] Method IN [Product-Service]");
         return result;
     }
