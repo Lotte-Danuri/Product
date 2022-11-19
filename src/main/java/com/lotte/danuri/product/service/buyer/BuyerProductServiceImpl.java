@@ -172,7 +172,10 @@ public class BuyerProductServiceImpl implements BuyerProductService{
     public List<ProductDto> getProductListById(ProductListDto productListDto){
         List<Product> productList = new ArrayList<>();
         productListDto.getProductId().forEach(v -> {
-            productList.add(productRepository.findById(v).get());
+            Optional<Product> product = productRepository.findById(v);
+            if (!product.isEmpty()) {
+                productList.add(product.get());
+            }
         });
 
         List<ProductDto> result = new ArrayList<>();
